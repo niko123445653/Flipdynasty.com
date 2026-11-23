@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flip Dynasty — Resale Empire</title>
+<style>
+:root{--bg:#0e1016;--surface:#161a24;--surface2:#1d2230;--surface3:#232a3b;--line:#2d3448;--text:#eef1f8;--muted:#9aa3ba;--green:#3ddc97;--red:#ff6b6b;--gold:#ffc94d;--blue:#5aa2ff;--purple:#a78bfa;--good:#3ddc97;--bad:#ff6b6b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,"Segoe UI",Roboto,sans-serif}
+button{font:inherit;font-size:13.5px;font-weight:650;cursor:pointer;border:1px solid transparent;border-radius:10px;padding:10px 14px;background:#2b3247;color:#fff;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1.1}
+button:active:not(:disabled){transform:translateY(0) scale(.98)}
+button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+button:hover:not(:disabled){filter:brightness(1.18);transform:translateY(-1px)}
+button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+input,select,textarea{font:inherit;background:#10131c;border:1px solid var(--line);color:#fff;border-radius:8px;padding:8px 10px;outline:0}
+input{width:100%}
+.good{color:var(--green)}.bad{color:var(--red)}.gold{color:var(--gold)}
+.topbar{position:sticky;top:0;z-index:30;background:rgba(14,16,22,.96);backdrop-filter:blur(9px);border-bottom:1px solid var(--line)}
+.topinner{max-width:1280px;margin:auto;display:flex;align-items:center;gap:11px;padding:10px 18px;flex-wrap:wrap}
+.logo{font-weight:850;font-size:20px;letter-spacing:-.5px}.logo span{color:var(--gold)}
+.search{flex:1;min-width:210px;display:flex;gap:8px;align-items:center;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:8px 11px}
+.search input{border:0;background:transparent;padding:0}
+.pill{background:var(--surface2);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:12.8px;white-space:nowrap}
+.pill b{color:var(--gold)}
+.pill.save{color:var(--muted)}.pill.save.warn{color:var(--red);border-color:#5a2a30}
+.top-actions{display:flex;gap:7px;align-items:center;margin-left:auto}.top-actions button{padding:8px 10px}.settings-btn{background:#202638;border-color:#38405a}.fullscreen-btn{background:#173d31;border-color:#286047;color:#8df0bd}
+@media(max-width:620px){.top-actions{margin-left:0}.topinner{gap:7px}.search{order:2;flex-basis:100%}}
+.subnav{max-width:1280px;margin:auto;display:flex;gap:7px;padding:0 18px 10px;overflow:auto}
+.subnav button{background:transparent;border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:12.8px;white-space:nowrap}
+.subnav button.active{background:var(--gold);color:#1c1500;border-color:var(--gold);font-weight:750}
+.badge{background:var(--red);color:#fff;border-radius:99px;font-size:10px;padding:1px 6px;margin-left:6px;font-weight:800}
+.wrap{max-width:1280px;margin:auto;padding:15px 18px 65px;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:15px}
+@media(max-width:1000px){.wrap{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:15px;overflow:hidden}
+.head{padding:12px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.head h2{margin:0;font-size:16px}
+.body{padding:13px 15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:12px}
+.item{background:var(--surface2);border:1px solid var(--line);border-radius:13px;overflow:hidden;display:flex;flex-direction:column}
+.thumb{height:118px;display:grid;place-items:center;font-size:48px;background:linear-gradient(135deg,#262e42,#171b28);position:relative}
+.thumb .badges{position:absolute;top:7px;left:7px;display:flex;gap:5px}
+.tag{font-size:10px;font-weight:750;letter-spacing:.4px;text-transform:uppercase;padding:3px 6px;border-radius:5px;background:#2b3247;color:var(--muted)}
+.tag.deal{background:#173d31;color:var(--green)}.tag.hot{background:#4b2a20;color:#ff9f6b}.tag.rare{background:#3a2f55;color:var(--purple)}
+.item-body{padding:11px;display:flex;flex-direction:column;gap:7px;flex:1}
+.title{font-weight:700;font-size:14.5px;line-height:1.25}
+.meta{color:var(--muted);font-size:12px;line-height:1.45}
+.price{font-size:19px;font-weight:800;color:var(--gold)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+.btn{border-radius:10px}.buy{background:linear-gradient(180deg,#46e6a2,#2fc884);color:#04281a;font-weight:800}.sell{background:linear-gradient(180deg,#ffd65e,#f2b92c);color:#231a00;font-weight:800}.ghost{background:#202638;border-color:#38405a;color:#e6eaf5}.ghost:hover:not(:disabled){border-color:#5b6688}.danger{background:#3a1b21;border-color:#6b2c35;color:#ff9d9d}.danger:hover:not(:disabled){background:#4a2027}
+.btn.sm{padding:7px 11px;font-size:12.5px}
+.btn.stack{flex-direction:column;gap:2px;padding:9px 14px;text-align:center}
+.btn.sm.stack{padding:6px 11px}
+.btn .lbl{font-weight:750}.btn .sub{font-size:10.5px;font-weight:500;opacity:.78;letter-spacing:.1px}.btn.sm .sub{font-size:10px}
+.buy,.sell{box-shadow:0 2px 0 rgba(0,0,0,.35)}.buy:hover:not(:disabled){box-shadow:0 2px 0 rgba(0,0,0,.35),0 0 0 3px rgba(61,220,151,.22)}.sell:hover:not(:disabled){box-shadow:0 2px 0 rgba(0,0,0,.35),0 0 0 3px rgba(255,201,77,.25)}
+.btn-row .btn{flex:1 1 auto}
+button:disabled .sub{opacity:.9}.item-body>.btn{width:100%}.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.sidebtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.thread .x{background:transparent;color:var(--muted);padding:4px 8px;border-radius:8px;font-size:13px;flex:none}.thread .x:hover{background:#4a2027;color:#ff9d9d}
+.msg{border:1px solid var(--line);background:var(--surface2);border-radius:12px;padding:11px;margin-bottom:9px}
+.msg.agreed{border-color:#3d5c48;background:#17251f}
+.avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#2b3348;font-weight:800;flex:none}
+.bar{height:8px;background:#10131c;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--blue)}
+#log{max-height:250px;overflow:auto}#log div{font-size:12.2px;padding:6px 0 6px 8px;border-bottom:1px solid #262c3d;line-height:1.45}
+.toast{position:fixed;right:15px;bottom:15px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gold);padding:12px 14px;border-radius:10px;max-width:340px;box-shadow:0 14px 35px #0009;display:none;z-index:80;font-size:13.5px}
+.modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;z-index:70;padding:15px}
+.modal-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;max-width:560px;width:100%;max-height:86vh;overflow:auto;padding:18px}
+.modal-box h3{margin:0 0 8px}
+.statgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.stat{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:9px}.stat b{display:block;font-size:17px}
+.upgrade{border:1px solid var(--line);background:var(--surface2);border-radius:11px;padding:10px;margin-bottom:8px}
+.ach{display:flex;gap:9px;align-items:center;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:8px;margin-bottom:7px}
+.ach.done{border-color:#3d5c48;background:#17251f}
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px}
+.filters select{min-width:130px}
+.detail{font-size:11.5px;color:var(--muted);line-height:1.6;background:#12161f;border-radius:8px;padding:6px 8px}
+.chip{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;background:#2b3247;color:var(--muted);margin-right:4px}
+.chip.p{background:#3a2f55;color:var(--purple)}.chip.l{background:#173d31;color:var(--green)}
+/* chat */
+.chat{display:grid;grid-template-columns:270px minmax(0,1fr);gap:12px}
+@media(max-width:760px){.chat{grid-template-columns:1fr}}
+.thread{display:flex;gap:9px;padding:9px;border:1px solid var(--line);border-radius:11px;background:var(--surface2);cursor:pointer;margin-bottom:7px;align-items:center}
+.thread.active{border-color:var(--gold)}.thread.closed{opacity:.6}
+.thread .tx{min-width:0;flex:1}.thread .tx b{display:flex;justify-content:space-between;gap:6px;font-size:13px}
+.thread .tx div{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.convo{display:flex;flex-direction:column;background:var(--surface2);border:1px solid var(--line);border-radius:13px;overflow:hidden;min-height:540px;max-height:680px}
+.convo-head{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.dealbar{padding:9px 12px;border-bottom:1px solid var(--line);background:#12161f;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.dealbar.agreed{background:#17251f}
+.msgs{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:200px}
+.bubble{max-width:80%;padding:8px 11px;border-radius:13px;font-size:13.5px;line-height:1.4;word-wrap:break-word;overflow-wrap:anywhere}
+.bubble time{display:block;font-size:10px;opacity:.6;margin-top:3px}
+.bubble.them{background:#2b3348;align-self:flex-start;border-bottom-left-radius:4px}
+.bubble.me{background:var(--gold);color:#231a00;align-self:flex-end;border-bottom-right-radius:4px}
+.bubble.sys{align-self:center;background:transparent;color:var(--muted);font-size:12px;border:1px dashed var(--line);text-align:center}
+.typing{display:flex;gap:4px;padding:11px 13px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:bl 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,60%,100%{opacity:.25}30%{opacity:1}}
+/* launch animation */
+.startup{position:fixed;inset:0;z-index:1000;display:grid;place-content:center;justify-items:center;gap:10px;background:radial-gradient(circle at 50% 45%,#28334b 0,#141824 42%,#090b10 100%);transition:opacity .65s ease,visibility .65s ease;overflow:hidden}
+.startup.hide{opacity:0;visibility:hidden;pointer-events:none}
+.startup-mark{font-size:64px;filter:drop-shadow(0 0 22px #ffc94d55);animation:markPop 1.25s cubic-bezier(.2,.8,.2,1) both,markFloat 2s ease-in-out 1.2s infinite}
+.startup-title{font-size:clamp(28px,6vw,48px);font-weight:950;letter-spacing:-1.6px;animation:titleReveal .7s .15s both}.startup-title span{color:var(--gold)}
+.startup-sub{font-size:11px;letter-spacing:4px;color:var(--muted);animation:titleReveal .7s .35s both}
+.startup-track{width:min(270px,65vw);height:5px;background:#30394f;border-radius:99px;overflow:hidden;margin-top:22px;animation:titleReveal .5s .4s both}.startup-track i{display:block;width:40%;height:100%;background:linear-gradient(90deg,var(--gold),#fff1a6,var(--gold));border-radius:99px;animation:loadTrack 1.35s ease-in-out both}
+.startup-glow{position:absolute;width:300px;height:300px;border-radius:50%;border:1px solid #ffc94d20;box-shadow:0 0 100px #ffc94d10;animation:glowPulse 2.5s infinite;pointer-events:none}
+@keyframes markPop{0%{opacity:0;transform:scale(.5) rotate(-18deg)}70%{transform:scale(1.12) rotate(5deg)}100%{opacity:1;transform:scale(1)}}@keyframes markFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}@keyframes titleReveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@keyframes loadTrack{from{width:0}to{width:100%}}@keyframes glowPulse{0%,100%{transform:scale(.9);opacity:.5}50%{transform:scale(1.08);opacity:1}}
+@media(prefers-reduced-motion:reduce){.startup-mark,.startup-track i,.startup-glow{animation:none}.startup-title,.startup-sub,.startup-track{animation:none}}
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px 0}
+.chips button{background:#202638;border:1px solid #38405a;border-radius:99px;padding:6px 11px;font-size:12px;font-weight:500}.chips button:hover:not(:disabled){border-color:var(--gold)}
+.compose{display:flex;gap:7px;padding:10px 12px}
+footer{max-width:1280px;margin:auto;padding:16px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="topinner">
+<div class="logo">Flip<span>Dynasty</span></div>
+<div class="search">🔍 <input id="search" placeholder="Search products, sellers, cities…"></div>
+<div class="pill">💵 <b id="cash">$100</b></div><div class="pill">📦 <span id="invCount">0</span></div><div class="pill">📈 <b id="worth">$100</b></div><div class="pill">⭐ <span id="rating">—</span></div><div class="pill">Lv <span id="level">1</span></div><div class="pill">Day <span id="day">1</span></div><div class="pill save" id="saveState">💾 …</div><div class="top-actions"><button class="fullscreen-btn" id="fullscreenBtn" title="Toggle fullscreen">⛶ Fullscreen</button><button class="settings-btn" id="settingsBtn" title="Settings">⚙️ Settings</button></div>
+</div>
+<div class="subnav">
+<button class="active" data-view="market" title="Browse items to buy">🛍️ Marketplace</button><button data-view="inventory" title="Items you own">📦 Inventory</button><button data-view="listings" title="Items you are selling">🏷️ My listings</button><button data-view="offers" title="Buyer offers waiting for you">🤝 Offers</button><button data-view="messages" title="Chat with buyers">💬 Messages</button><button data-view="upgrades" title="Permanent business upgrades">⬆️ Upgrades</button><button data-view="stats" title="Stats, reviews, achievements, save data">📊 Dashboard</button>
+</div></div>
+
+<div id="startup" class="startup" aria-label="Loading Flip Dynasty">
+  <div class="startup-mark">🏛️</div>
+  <div class="startup-title">Flip <span>Dynasty</span></div>
+  <div class="startup-sub">BUILD YOUR RESALE EMPIRE</div>
+  <div class="startup-track"><i></i></div>
+  <div class="startup-glow"></div>
+</div>
+
+<div class="wrap">
+<div><div class="card"><div class="head"><h2 id="viewTitle">Live marketplace</h2><div class="small" id="viewNote"></div></div><div class="body"><div id="toolbar"></div><div class="grid" id="content"></div></div></div></div>
+<aside>
+<div class="card"><div class="head"><h2>Empire milestones</h2></div><div class="body"><p class="small">Reach <b class="gold">$200,000,000</b> net worth.<br><span class="small">Milestones scale from $1K to $200M. Unlock bigger assets as your level rises.</span></p><div class="bar"><i id="goalBar"></i></div><div class="small" id="goalText"></div><div class="small" id="goalNext"></div>
+<div class="sidebtns"><button class="btn ghost stack" id="refreshBtn" title="Pay $5 to load a fresh set of listings"><span class="lbl">🔄 Refresh feed</span><span class="sub">new listings · $5</span></button><button class="btn ghost stack" id="scoutBtn" title="Pay $25 to find two off-market deals"><span class="lbl">🔭 Scout deals</span><span class="sub">2 hidden deals · $25</span></button><button class="btn ghost stack" id="gigBtn" title="Earn a little cash once per day"><span class="lbl">🛠️ Side gig</span><span class="sub">+$15–35 · once a day</span></button><button class="btn ghost stack" id="skipBtn" title="Skip ahead to the next day"><span class="lbl">⏭ Next day</span><span class="sub">skip the wait</span></button></div>
+<div class="small" style="margin-top:10px">Next day in <span id="clock">25</span>s</div><div class="bar" style="margin-top:4px"><i id="clockBar" style="background:var(--gold)"></i></div></div></div>
+<div class="card" style="margin-top:13px"><div class="head"><h2>Market pulse</h2></div><div class="body"><div id="pulse" class="small"></div></div></div>
+<div class="card" style="margin-top:13px"><div class="head"><h2>Activity</h2></div><div class="body"><div id="log"></div></div></div>
+</aside>
+</div>
+
+<div class="modal" id="modal"><div class="modal-box" id="modalBox"></div></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+<footer>Flip Dynasty is a fictional reselling simulation. All buyers, sellers, messages, reviews, prices, and transactions are generated for gameplay.</footer>
+
+<script>
+const SAVE_KEY='flipbay_pro_v4',OLD_KEY='flipbay_pro_v3',DAY_MS=25000;
+const CATS=['electronics','fashion','collectibles','home','tickets','luxury'];
+const GOAL=200000000,MILES=[1000,10000,50000,100000,250000,500000,1000000,2500000,5000000,10000000,25000000,50000000,100000000,150000000,200000000];
+const catalog=[
+{n:'AirPods Pro',i:'🎧',c:'electronics',base:165,vol:.18,ship:8,risk:.04,d:'Wireless earbuds with strong resale demand.'},
+{n:'iPhone 15',i:'📱',c:'electronics',base:620,vol:.14,ship:18,risk:.07,d:'Popular smartphone with dependable resale value.'},
+{n:'PS5 Console',i:'🎮',c:'electronics',base:430,vol:.24,ship:24,risk:.09,d:'High-demand gaming console; check controller inclusion.'},
+{n:'Nintendo Switch OLED',i:'🕹️',c:'electronics',base:270,vol:.19,ship:16,risk:.05,d:'Portable console with a broad buyer market.'},
+{n:'RTX Graphics Card',i:'🖥️',c:'electronics',base:680,vol:.31,ship:22,risk:.12,d:'PC hardware; prices can move sharply with shortages.'},
+{n:'MacBook Air',i:'💻',c:'electronics',base:780,vol:.15,ship:20,risk:.08,d:'Lightweight laptop with reliable demand.'},
+{n:'Canon Camera',i:'📷',c:'electronics',base:390,vol:.21,ship:17,risk:.1,d:'Used camera market rewards complete kits.'},
+{n:'Dyson Vacuum',i:'🤖',c:'home',base:330,vol:.17,ship:28,risk:.06,d:'Premium vacuum; attachments affect value.'},
+{n:'Espresso Machine',i:'☕',c:'home',base:250,vol:.22,ship:30,risk:.07,d:'Coffee enthusiasts pay for well-maintained machines.'},
+{n:'E-Bike',i:'🚲',c:'home',base:820,vol:.23,ship:45,risk:.11,d:'Large purchase; pickup can avoid shipping costs.'},
+{n:'Designer Sneakers',i:'👟',c:'fashion',base:190,vol:.38,ship:10,risk:.18,d:'Hype-driven market where authentication matters.'},
+{n:'Vintage Leather Jacket',i:'🧥',c:'fashion',base:110,vol:.42,ship:12,risk:.08,d:'Condition and brand strongly affect resale value.'},
+{n:'Luxury Watch',i:'⌚',c:'fashion',base:950,vol:.27,ship:16,risk:.2,d:'High-value flip with meaningful authenticity risk.'},
+{n:'Gold Chain',i:'📿',c:'fashion',base:520,vol:.2,ship:14,risk:.12,d:'Precious-metal resale with relatively steady demand.'},
+{n:'Designer Handbag',i:'👜',c:'fashion',base:640,vol:.29,ship:15,risk:.19,d:'Luxury resale market with authentication risk.'},
+{n:'Signed Jersey',i:'👕',c:'collectibles',base:140,vol:.46,ship:11,risk:.22,d:'Sports memorabilia; provenance is everything.'},
+{n:'Graded Trading Card',i:'🃏',c:'collectibles',base:85,vol:.55,ship:7,risk:.09,d:'Small item with large price swings.'},
+{n:'Vintage Comic',i:'📚',c:'collectibles',base:75,vol:.5,ship:7,risk:.12,d:'Condition grading drives collector value.'},
+{n:'Retired LEGO Set',i:'🧱',c:'collectibles',base:160,vol:.36,ship:18,risk:.07,d:'Sealed retired sets attract collectors.'},
+{n:'Concert Tickets',i:'🎫',c:'tickets',base:170,vol:.48,ship:0,risk:.15,d:'Digital delivery; prices move with event hype.'},
+{n:'Sports Tickets',i:'🏀',c:'tickets',base:120,vol:.44,ship:0,risk:.12,d:'Last-minute buyers may pay a premium.'},
+{n:'Festival Pass',i:'🎪',c:'tickets',base:290,vol:.5,ship:0,risk:.18,d:'Demand rises close to the event date.'},
+{n:'Vintage Camera Lens',i:'🔭',c:'electronics',base:210,vol:.33,ship:12,risk:.11,d:'Photography collectors look for clean glass.'},
+{n:'Mechanical Keyboard',i:'⌨️',c:'electronics',base:130,vol:.29,ship:9,risk:.05,d:'Enthusiast keyboards can resell quickly.'},
+{n:'Smartwatch',i:'⌚',c:'electronics',base:240,vol:.23,ship:8,risk:.07,d:'Wearables have a broad resale audience.'},
+{n:'Skateboard Deck',i:'🛹',c:'collectibles',base:70,vol:.43,ship:10,risk:.09,d:'Limited graphics can become collector items.'},
+{n:'Vintage Rolex',i:'⌚',c:'luxury',base:7800,vol:.2,ship:40,risk:.2,lv:4,d:'Collector-grade watch; papers and service history matter.'},
+{n:'Fine Art Painting',i:'🖼️',c:'luxury',base:14000,vol:.25,ship:120,risk:.22,lv:6,d:'Original canvas; provenance drives the price.'},
+{n:'Vintage Motorcycle',i:'🏍️',c:'luxury',base:21000,vol:.2,ship:350,risk:.12,lv:8,d:'Restored classic bike with a loyal collector market.'},
+{n:'Classic Car',i:'🚗',c:'luxury',base:38000,vol:.18,ship:600,risk:.12,lv:10,d:'Numbers-matching classic; transport is expensive.'},
+{n:'Diamond Necklace',i:'💎',c:'luxury',base:65000,vol:.2,ship:60,risk:.2,lv:13,d:'Certified stones; always verify the paperwork.'},
+{n:'Vintage Supercar',i:'🏎️',c:'luxury',base:140000,vol:.2,ship:900,risk:.14,lv:16,d:'Rare supercar for serious collectors.'},
+{n:'Rare Gemstone Lot',i:'🔶',c:'luxury',base:260000,vol:.22,ship:80,risk:.18,lv:20,d:'Investment-grade gemstones with lab certificates.'},
+{n:'iPad Pro',i:'📱',c:'electronics',base:920,vol:.19,ship:20,risk:.07,lv:2,d:'Premium tablet with strong creative and productivity demand. Check screen condition, storage, included pencil, and battery performance.'},
+{n:'Gaming PC',i:'🖥️',c:'electronics',base:1450,vol:.28,ship:55,risk:.12,lv:3,d:'Custom gaming desktop. GPU, CPU, cooling, RAM, storage, and clean benchmarking determine the resale value.'},
+{n:'Studio Headphones',i:'🎧',c:'electronics',base:310,vol:.23,ship:12,risk:.08,lv:2,d:'Professional headphones. Verify cable, pads, driver condition, and original accessories.'},
+{n:'Drone Kit',i:'🛸',c:'electronics',base:560,vol:.32,ship:25,risk:.15,lv:4,d:'Drone bundle with controller and batteries. Buyers value flight condition, camera quality, and complete accessories.'},
+{n:'Mirrorless Camera',i:'📸',c:'electronics',base:980,vol:.22,ship:24,risk:.1,lv:5,d:'Camera body for enthusiasts. Shutter count, sensor cleanliness, and lens compatibility matter.'},
+{n:'4K Monitor',i:'🖥️',c:'electronics',base:420,vol:.2,ship:30,risk:.06,lv:2,d:'High-resolution monitor. Inspect pixels, ports, stand, refresh rate, and panel type.'},
+{n:'Smart Speaker Set',i:'🔊',c:'electronics',base:145,vol:.26,ship:14,risk:.05,lv:1,d:'Multi-room audio bundle. Pairing, reset status, and matching units can affect value.'},
+{n:'Vintage Synthesizer',i:'🎹',c:'electronics',base:1250,vol:.35,ship:35,risk:.14,lv:7,d:'Classic electronic instrument. Key response, knobs, display, and power supply should be checked.'},
+{n:'Running Shoes Limited',i:'👟',c:'fashion',base:240,vol:.43,ship:10,risk:.2,lv:3,d:'Limited colorway sneakers. Box, sizing, wear, and authentication are important to collectors.'},
+{n:'Designer Sunglasses',i:'🕶️',c:'fashion',base:280,vol:.31,ship:8,risk:.16,lv:2,d:'Fashion accessory with brand-driven demand. Check lenses, hinges, case, and authenticity details.'},
+{n:'Wool Coat',i:'🧣',c:'fashion',base:220,vol:.3,ship:14,risk:.06,lv:2,d:'Seasonal outerwear. Fabric, lining, fit information, and cleaning history add confidence.'},
+{n:'Vintage Denim',i:'👖',c:'fashion',base:95,vol:.38,ship:9,risk:.08,lv:1,d:'Vintage jeans with collector interest. Measurements, tags, fading, and repairs are key listing details.'},
+{n:'Leather Boots',i:'🥾',c:'fashion',base:180,vol:.3,ship:15,risk:.08,lv:2,d:'Quality boots. Buyers look for sole wear, leather condition, size, and care history.'},
+{n:'Designer Wallet',i:'👛',c:'fashion',base:260,vol:.29,ship:8,risk:.17,lv:3,d:'Small luxury accessory. Stitching, corners, interior wear, and proof of authenticity matter.'},
+{n:'Rare Vinyl Box Set',i:'💿',c:'collectibles',base:210,vol:.45,ship:12,risk:.09,lv:3,d:'Collector music set. Pressing details, completeness, sleeve condition, and scratches affect value.'},
+{n:'Retro Game Bundle',i:'🕹️',c:'collectibles',base:310,vol:.42,ship:18,risk:.08,lv:3,d:'Bundle of classic games and hardware. Test functionality and note missing cables or manuals.'},
+{n:'Model Train Collection',i:'🚂',c:'collectibles',base:480,vol:.36,ship:35,risk:.1,lv:5,d:'Collector rail set. Track, locomotive operation, boxed pieces, and manufacturer details influence value.'},
+{n:'Rare Figure',i:'🧸',c:'collectibles',base:190,vol:.5,ship:10,risk:.13,lv:4,d:'Limited collectible figure. Box condition, edition markings, and authenticity are major buyer questions.'},
+{n:'First Edition Book',i:'📖',c:'collectibles',base:340,vol:.48,ship:10,risk:.1,lv:4,d:'Book collector item. Edition page, dust jacket, signatures, and condition should be described accurately.'},
+{n:'Antique Clock',i:'🕰️',c:'collectibles',base:650,vol:.34,ship:40,risk:.12,lv:6,d:'Decorative antique. Age, mechanism, service history, and safe packaging matter.'},
+{n:'Dining Table Set',i:'🍽️',c:'home',base:720,vol:.2,ship:120,risk:.05,lv:3,d:'Large furniture lot. Dimensions, finish, stability, and pickup arrangements are essential.'},
+{n:'Designer Floor Lamp',i:'💡',c:'home',base:390,vol:.24,ship:35,risk:.07,lv:3,d:'Statement lighting. Check wiring, shade condition, maker labels, and safe operation.'},
+{n:'Robot Mower',i:'🌱',c:'home',base:1250,vol:.24,ship:55,risk:.1,lv:5,d:'Outdoor smart equipment. Battery health, boundary accessories, blades, and app reset status affect value.'},
+{n:'Air Purifier',i:'🌬️',c:'home',base:260,vol:.21,ship:22,risk:.06,lv:2,d:'Home appliance. Filter life, noise, model number, and replacement-filter availability matter.'},
+{n:'Premium Office Chair',i:'🪑',c:'home',base:680,vol:.23,ship:65,risk:.06,lv:4,d:'Ergonomic chair. Adjustments, upholstery, wheels, and model identification are useful details.'},
+{n:'Arcade Cabinet',i:'👾',c:'collectibles',base:1750,vol:.33,ship:240,risk:.12,lv:8,d:'Large retro gaming cabinet. Screen, controls, cabinet condition, and delivery logistics drive buyer interest.'},
+{n:'Music Festival VIP',i:'🎟️',c:'tickets',base:520,vol:.52,ship:0,risk:.2,lv:5,d:'Premium event pass. Transfer rules, event date, and official ticket status are critical.'},
+{n:'Championship Ticket',i:'🏆',c:'tickets',base:850,vol:.55,ship:0,risk:.2,lv:7,d:'Major sporting event ticket. Seat details, transfer eligibility, and event timing drive price changes.'},
+{n:'Premium Cabin Voucher',i:'✈️',c:'tickets',base:1250,vol:.42,ship:0,risk:.18,lv:8,d:'Travel voucher simulation item. Expiration, restrictions, and transferability affect demand.'},
+{n:'Rare Sculpture',i:'🗿',c:'luxury',base:45000,vol:.24,ship:350,risk:.2,lv:12,d:'High-value art object. Provenance, condition reports, and specialist appraisal are important.'},
+{n:'Collector Watch Set',i:'⌚',c:'luxury',base:28000,vol:.22,ship:70,risk:.19,lv:10,d:'Premium watch bundle. Documentation, service history, serial checks, and authenticity verification matter.'},
+{n:'Luxury Estate',i:'🏡',c:'luxury',base:850000,vol:.14,ship:0,risk:.08,lv:22,d:'Late-game property asset in a fictional marketplace. Location, title paperwork, inspection, and financing determine value.'},
+{n:'Private Yacht',i:'🛥️',c:'luxury',base:2400000,vol:.17,ship:0,risk:.1,lv:25,d:'Late-game yacht asset. Survey, maintenance records, marina costs, and ownership paperwork drive buyer confidence.'},
+{n:'Rare Art Collection',i:'🖼️',c:'luxury',base:6800000,vol:.2,ship:0,risk:.18,lv:28,d:'Endgame art collection. Provenance, condition, insurance, and specialist authentication are essential.'},
+{n:'Commercial Building',i:'🏢',c:'luxury',base:24000000,vol:.12,ship:0,risk:.08,lv:32,d:'Major late-game asset. Rental assumptions, inspection reports, legal documents, and operating costs shape valuation.'},
+{n:'Island Resort',i:'🏝️',c:'luxury',base:72000000,vol:.1,ship:0,risk:.08,lv:36,d:'Endgame mega-asset. Financial records, permits, maintenance, and location analysis are part of the fictional deal.'},
+ ];
+const buyers=['Maya R.','Jordan T.','Sofia L.','Ethan K.','Priya N.','Liam O.','Ava M.','Noah B.','Zara H.','Omar S.','Chloe W.','Lucas F.','Nina P.','Milo D.','Isla C.','Ravi J.','Ella G.','Felix V.','Hana T.','Diego M.'];
+const first=['Alex','Sam','Chris','Taylor','Jamie','Robin','Morgan','Casey','Riley','Dana','Jules','Reese','Mara','Nico','Leo'];
+const initial='ABCDEFGHJKLMNPRSTVWZ';
+const cities=['Bergen','Oslo','Trondheim','Stavanger','Tromsø','Kristiansand','Drammen','Fredrikstad','Bodø','Ålesund'];
+const conditions=['New','Like new','Good','Used','For parts'];
+const sellerNotes=['Includes original box.','No major visible wear.','Message for extra photos.','Pickup preferred.','Ships within two business days.','Bundle discount available.','Selling because I upgraded.','Smoke-free home.','Receipt available.','Slight cosmetic wear.'];
+const upgrades=[
+{id:'marketing',name:'Marketing Suite',icon:'📣',base:250,growth:1.65,desc:'Increases buyer offers and listing views.',fx:l=>`+${4*l}% chance of offers per day`},
+{id:'negotiation',name:'Negotiation Training',icon:'🤝',base:300,growth:1.7,desc:'Buyers are willing to pay more and accept counters more often.',fx:l=>`Buyers will pay up to ${4*l}% more`},
+{id:'authentication',name:'Authentication Toolkit',icon:'🔍',base:400,growth:1.8,desc:'Fewer counterfeits appear, and you catch most of the rest before paying.',fx:l=>l?`${Math.round(Math.min(95,55+15*l))}% catch rate on counterfeits`:'No protection yet'},
+{id:'logistics',name:'Logistics Network',icon:'🚚',base:350,growth:1.75,desc:'Lowers shipping costs and damage risk.',fx:l=>`${Math.round(Math.min(60,12*l))}% cheaper shipping, safer deliveries`},
+{id:'analytics',name:'Price Analytics',icon:'📊',base:500,growth:1.85,desc:'Level 1 shows fair values. Level 2+ also estimates your profit before you buy.',fx:l=>l>=2?'Fair values + profit estimates':l?'Fair values':'Locked'}
+];
+const personas={
+ friendly:{label:'Friendly',patience:3,flex:1},
+ haggler:{label:'Haggler',patience:4,flex:.93},
+ lowballer:{label:'Lowballer',patience:2,flex:.86},
+ collector:{label:'Collector',patience:3,flex:1.08},
+ rushed:{label:'In a hurry',patience:2,flex:1.05}};
+const PH={
+ friendly:{open:['Hi! Really like your {item}. Would you take {amt}?','Hey, is the {item} still around? I could do {amt}.'],counter:['How about {amt}? That’s a good number for me.','I can stretch to {amt}.'],accept:['Deal! {amt} works for me. 🙌','Perfect, {amt} it is!'],reject:['Sorry, that’s a bit out of my budget.','Hmm, that’s more than I planned to spend.'],walk:['No worries, thanks anyway. I’ll keep looking!'],thanks:['Thanks, great seller! Payment sent.']},
+ haggler:{open:['Your {item} is interesting. {amt}, cash. Final?','I’ll give {amt}. Fair is fair.'],counter:['Meet me at {amt} and we’re done.','{amt}. That’s my best.'],accept:['Alright, {amt}. You drive a hard bargain.'],reject:['Come on, that’s way too high.'],walk:['Too rich for me. Good luck.'],thanks:['Smooth deal. Paid.']},
+ lowballer:{open:['{amt} for the {item}. Take it or leave it.','Can do {amt}.'],counter:['Fine, {amt}.','Last offer: {amt}.'],accept:['OK {amt}. Done.'],reject:['Nope. Too much.'],walk:['Forget it.'],thanks:['Paid. Ship it.']},
+ collector:{open:['I’ve been hunting for a {item}! Offering {amt}.','Serious collector here. {amt} for the {item}?'],counter:['I value condition. {amt} is where I land.'],accept:['{amt} is a fair price for a piece like this. Deal.'],reject:['I appreciate it, but that’s beyond my valuation.'],walk:['I’ll pass for now, thank you.'],thanks:['Excellent piece. Payment sent, thank you!']},
+ rushed:{open:['Need a {item} ASAP! {amt} right now?','{amt}, can pay immediately.'],counter:['{amt}, and I pay in the next 5 minutes.'],accept:['{amt}! Sending payment now.'],reject:['Too high, I need it quick but not that much.'],walk:['Found another one. Thanks.'],thanks:['Paid! Please ship today.']}};
+
+/* ---------- state, helpers ---------- */
+function defState(){return{v:4,cash:100,day:1,xp:0,level:1,rep:100,homeCity:'Bergen',inv:[],market:[],listings:[],offers:[],threads:[],reviews:[],log:[],drafts:{},openThread:null,
+ trend:{electronics:1,fashion:1,collectibles:1,home:1,tickets:1,luxury:1},
+ stats:{bought:0,sold:0,profit:0,bestProfit:0,offersAccepted:0,counterAccepted:0,scamsAvoided:0,chats:0,shippingPaid:0},
+ upgrades:{},achievements:{},view:'market',search:'',category:'all',sort:'newest',won:false,gigDay:0,lastSeen:Date.now()}}
+let S=defState(),storageOK=true,lastSaved=null,tickAt=Date.now()+DAY_MS,chipList=[];
+const $=id=>document.getElementById(id);
+const money=n=>(n<0?'-':'')+'$'+Math.round(Math.abs(n)).toLocaleString();
+const rand=(a,b)=>a+Math.random()*(b-a);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const lvl=id=>S.upgrades[id]||0;
+const bt=(cls,label,sub,attrs)=>`<button class="btn ${cls} stack" ${attrs||''}><span class="lbl">${label}</span>${sub?`<span class="sub">${sub}</span>`:''}</button>`;
+const fmtTime=ts=>new Date(ts).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+function log(t,c){S.log.unshift({t,c:c||''});S.log=S.log.slice(0,100)}
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(t._x);t._x=setTimeout(()=>t.style.display='none',3800)}
+function shipFactor(){return Math.max(.4,1-.12*lvl('logistics'))}
+
+/* ---------- save / load ---------- */
+let storeMode='none';
+function updateSaveBadge(){const el=$('saveState');if(!el)return;
+ const t=lastSaved?lastSaved.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}):'';
+ if(!storageOK){el.className='pill save warn';el.title='This browser is blocking all storage. Use Dashboard → Export save to keep your progress.';el.textContent='⚠️ Autosave blocked — export your save'}
+ else if(storeMode==='local'){el.className='pill save';el.title='Progress is saved automatically in this browser.';el.textContent='💾 Autosaved '+t}
+ else{el.className='pill save';el.title='Storage is restricted here, so progress is only kept while this tab stays open. Export a save file to keep it permanently.';el.textContent='💾 Saved (this tab only) '+t}}
+function writeStore(json){
+ try{localStorage.setItem(SAVE_KEY,json);storeMode='local';return true}catch(e){}
+ try{sessionStorage.setItem(SAVE_KEY,json);storeMode='session';return true}catch(e){}
+ try{window.name='FLIPBAY4:'+json;storeMode='tab';return true}catch(e){}
+ return false}
+function readStore(){
+ const c=[];
+ try{const a=localStorage.getItem(SAVE_KEY)||localStorage.getItem(OLD_KEY);if(a)c.push(a)}catch(e){}
+ try{const b=sessionStorage.getItem(SAVE_KEY);if(b)c.push(b)}catch(e){}
+ try{if(String(window.name).indexOf('FLIPBAY4:')===0)c.push(window.name.slice(9))}catch(e){}
+ let best=null,bt=-1;
+ c.forEach(r=>{try{const d=JSON.parse(r);if(d&&Array.isArray(d.inv)&&(d.lastSeen||0)>bt){best=r;bt=d.lastSeen||0}}catch(e){}});
+ return best}
+function save(){S.lastSeen=Date.now();storageOK=writeStore(JSON.stringify(S));if(storageOK)lastSaved=new Date();updateSaveBadge()}
+function hydrate(d){
+ const base=defState(),s=Object.assign(base,d);
+ s.stats=Object.assign(defState().stats,d.stats||{});s.trend=Object.assign(defState().trend,d.trend||{});
+ ['inv','market','listings','offers','threads','reviews','log'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]});
+ s.upgrades=s.upgrades||{};s.achievements=s.achievements||{};s.drafts=s.drafts||{};delete s.messages;
+ if(s.won&&(s.cash||0)+s.inv.reduce((a,i)=>a+(i.total||0),0)<GOAL)s.won=false;
+ s.inv.forEach(it=>{if(!it.det)it.det=genDetails(it.item,it.condition||'Good')});
+ s.market.forEach(l=>{if(!l.det)l.det=genDetails(l.item,l.condition||'Good');l.tags=(l.tags||[]).filter(t=>t!=='fake')});
+ s.listings.forEach(l=>{delete l.offers});
+ const keep=[];
+ s.offers.forEach(o=>{
+  const it=s.inv.find(x=>x.id===o.invId);if(!it)return;
+  if(!o.threadId||!s.threads.find(t=>t.id===o.threadId)){
+   const persona=o.persona||pick(Object.keys(personas));
+   o.persona=persona;o.maxPay=o.maxPay||o.amount*rand(1.05,1.2);o.patience=o.patience==null?personas[persona].patience:o.patience;
+   const th=newThread(o,it,o.message||'Hi! Is this still available?',s.day);o.threadId=th.id;s.threads.unshift(th)}
+  keep.push(o)});
+ s.offers=keep;
+ s.threads.forEach(t=>{t.msgs=t.msgs||[];if(t.status==='open'&&!s.offers.find(o=>o.id===t.offerId))t.status='closed'});
+ return s}
+function load(){
+ const raw=readStore();
+ if(!raw)return false;
+ try{S=hydrate(JSON.parse(raw))}catch(e){console.error(e);S=defState();return false}
+ const away=Date.now()-(S.lastSeen||Date.now());const days=Math.min(4,Math.floor(away/DAY_MS));
+ if(days>0){for(let i=0;i<days;i++)nextDay();log(`⏳ Welcome back! ${days} day(s) passed while you were away.`,'var(--gold)')}
+ return true}
+function exportSave(){save();const blob=new Blob([JSON.stringify(S)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='flip-dynasty-save.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+function applySave(text){try{const d=JSON.parse(text);if(!d||!Array.isArray(d.inv))throw 0;S=hydrate(d);S.lastSeen=Date.now();closeModal();toast('Save imported.');setView(S.view||'market')}catch(e){toast('That is not a valid Flip Dynasty save.')}}
+function importSave(file){const r=new FileReader();r.onload=()=>applySave(r.result);r.readAsText(file)}
+function copySaveCode(){save();const t=JSON.stringify(S);
+ const done=()=>toast('Save code copied. Paste it into “Paste save code” to restore.');
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,()=>fallbackCopy(t,done))}else fallbackCopy(t,done)}
+function fallbackCopy(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){toast('Copy failed — use Export save instead.')}a.remove()}
+function pasteSaveCode(){openModal(`<h3>Paste save code</h3><p class="small">Paste a save code you copied earlier. This replaces your current progress.</p><textarea id="pasteBox" rows="6" style="width:100%"></textarea><div class="btn-row" style="margin-top:10px"><button class="btn sell" onclick="applySave($('pasteBox').value)">⬆ Load save</button><button class="btn ghost" onclick="closeModal()">✕ Cancel</button></div>`)}
+function resetGame(){openModal(`<h3>Reset game?</h3><p class="small">This permanently deletes your current progress and starts over with $100.</p><div class="btn-row" style="margin-top:10px"><button class="btn danger" onclick="doReset()">🗑 Yes, reset everything</button><button class="btn ghost" onclick="closeModal()">✕ Cancel</button></div>`)}
+function doReset(){S=defState();refreshMarket(true);log('New game started. You have $100.');closeModal();setView('market')}
+
+/* ---------- economy ---------- */
+function levelFromXp(){return 1+Math.floor(S.xp/100)}
+function netWorth(){return S.cash+S.inv.reduce((a,i)=>a+i.total,0)}
+function genDetails(item,condition){
+ const acc={electronics:['Charger included','Case included','Cable only','No accessories'],home:['All attachments','Missing one attachment','Manual included'],fashion:['Dust bag included','Tags attached','No extras','Care card'],collectibles:['Protective case','Sleeved','Certificate of authenticity','Shelf wear on box'],tickets:['Transfer via app','PDF delivery','Seat info verified'],luxury:['Certificate of authenticity','Original papers','Insured delivery','Service records']}[item.c];
+ const wear={New:'Factory fresh, no signs of use.','Like new':'Barely used, no visible marks.',Good:'Light signs of use.',Used:'Visible wear but fully functional.','For parts':'Not fully working — sold for parts.'};
+ return{box:item.c==='tickets'?null:Math.random()<(condition==='New'?.9:.55),receipt:Math.random()<.4,
+  warranty:(item.c==='electronics'||item.c==='home')&&condition!=='For parts'&&Math.random()<.35?Math.floor(rand(30,300)):0,
+  accessory:pick(acc),wear:wear[condition]||'',age:Math.round(rand(.3,5)*10)/10}}
+function detLine(d){return[d.box===null?'':`📦 Box: ${d.box?'yes':'no'}`,`🧾 Receipt: ${d.receipt?'yes':'no'}`,d.warranty?`🛡️ ${d.warranty}-day warranty`:'🛡️ No warranty',`🔧 ${d.accessory}`].filter(Boolean).join(' • ')}
+function fairValue(item,quality,condition,det){
+ const mult={New:1.08,'Like new':1.03,Good:.97,Used:.9,'For parts':.68}[condition]||.95;
+ let v=item.base*mult*(0.92+quality*.25)*(S.trend[item.c]||1);
+ if(det){if(det.box)v*=1.04;if(det.receipt)v*=1.02;if(det.warranty)v*=1.03}
+ return v}
+const fvInv=it=>fairValue(it.item,it.quality,it.condition,it.det);
+const fvList=l=>fairValue(l.item,l.demand,l.condition,l.det);
+function driftTrends(){CATS.forEach(c=>{const t=S.trend[c]||1;S.trend[c]=clamp(t+(1-t)*.08+rand(-.035,.035),.8,1.25)})}
+function avgRating(){const r=S.reviews.slice(0,25);return r.length?r.reduce((a,x)=>a+x.stars,0)/r.length:null}
+function makeListing(forceDeal=false){
+ const pool=catalog.filter(c=>!c.lv||c.lv<=S.level),hi=pool.filter(c=>c.lv),item=pick(hi.length&&Math.random()<.22?hi:pool),condition=pick(conditions);
+ let price=item.base*rand(.48,1.22)*(S.trend[item.c]||1),demand=rand(.68,1.42),tags=[];
+ if(Math.random()<.15||forceDeal){price*=rand(.55,.76);demand*=rand(1.18,1.6);tags.push('deal')}
+ if(Math.random()<.12){price*=rand(1.16,1.5);demand*=rand(.68,.95);tags.push('hot')}
+ if(Math.random()<.1){tags.push('rare');price*=rand(1.08,1.35);demand*=rand(1.05,1.3)}
+ const verified=Math.random()<.74;
+ const fake=Math.random()<item.risk*Math.max(.1,1-.3*lvl('authentication'))*(verified?.6:1.7);
+ if(fake)price*=rand(.55,.85);
+ const shipCost=item.ship?Math.max(0,Math.round(item.ship*shipFactor())):0;
+ return{id:uid(),item,price:Math.max(6,price),shipping:shipCost,demand:clamp(demand,.45,1.9),tags,seller:pick(first)+' '+pick(initial)+'.',
+  rating:Math.round((fake?rand(3.2,4.4):rand(3.4,5))*10)/10,city:pick(cities),age:Math.floor(rand(1,24)),views:Math.floor(rand(8,500)),watchers:Math.floor(rand(0,45)),
+  condition,verified,fake,det:genDetails(item,condition),description:item.d+' '+pick(sellerNotes)}}
+function refreshMarket(free=false){
+ if(!free){if(S.cash<5){toast('Not enough cash to refresh the feed.');return}S.cash-=5;log('Paid $5 to refresh marketplace listings.','var(--red)')}
+ S.market=Array.from({length:14},()=>makeListing());log('Marketplace feed refreshed.')}
+function scout(){if(S.cash<25){toast('Not enough cash to scout deals.');return}S.cash-=25;S.market.unshift(makeListing(true),makeListing(true));S.market=S.market.slice(0,16);log('Scouted two off-market deals. Look for the DEAL tag.','var(--gold)');toast('Found 2 potential deals.');render()}
+function sideGig(){if(S.gigDay===S.day){toast('You already worked a gig today.');return}S.gigDay=S.day;const p=Math.round(rand(15,35));S.cash+=p;log(`🛠️ Side gig paid ${money(p)}.`,'var(--green)');toast(`Side gig: +${money(p)}`);render()}
+function buyListing(id){
+ const l=S.market.find(x=>x.id===id);if(!l){toast('That listing is no longer available.');closeModal();render();return}
+ const total=l.price+l.shipping;
+ if(S.cash<total){toast(`You need ${money(total-S.cash)} more including shipping.`);return}
+ S.cash-=total;S.market=S.market.filter(x=>x.id!==id);closeModal();
+ if(l.fake){
+  const caught=lvl('authentication')>0&&Math.random()<Math.min(.95,.55+.15*lvl('authentication'));
+  if(caught){S.cash+=total;S.stats.scamsAvoided++;S.xp+=5;log(`🔍 Authentication toolkit flagged a counterfeit ${l.item.n}. Your ${money(total)} was refunded.`,'var(--good)');toast('Counterfeit listing avoided!')}
+  else{const back=total*rand(.1,.35);S.cash+=back;log(`⚠️ You bought a counterfeit ${l.item.n} from ${l.seller}. Only ${money(back)} recovered.`,'var(--bad)');toast('You purchased a counterfeit item!')}
+  checkLevel();checkAchievements();render();return}
+ S.stats.bought++;S.xp+=8;
+ S.inv.push({id:uid(),item:l.item,cost:l.price,shipping:l.shipping,total,boughtDay:S.day,quality:l.demand,condition:l.condition,verified:l.verified,det:l.det,seller:l.seller,listed:false,listingId:null});
+ log(`Bought ${l.item.i} <b>${l.item.n}</b> from ${l.seller} for ${money(l.price)}${l.shipping?` + ${money(l.shipping)} shipping`:''}.`,'var(--green)');
+ toast(`Purchased ${l.item.n} for ${money(total)}.`);checkLevel();checkAchievements();render()}
+
+/* ---------- listings ---------- */
+function openListModal(invId){
+ const it=S.inv.find(x=>x.id===invId);if(!it)return;
+ const l=S.listings.find(x=>x.invId===invId),fair=fvInv(it);
+ openModal(`<h3>${l?'Adjust listing':'List'} ${it.item.i} ${it.item.n}</h3>
+ <p class="small">Paid <b>${money(it.total)}</b> • ${it.condition} • demand ${Math.round(it.quality*100)}%<br>Estimated market value: <b>${money(fair)}</b> (${S.trend[it.item.c]>=1?'market trending up':'market trending down'})</p>
+ <div class="detail">${detLine(it.det)}<br>${esc(it.det.wear)}</div>
+ <label class="small">Asking price</label><input id="askPrice" type="number" min="1" value="${Math.round(l?l.price:fair*1.15)}">
+ <p class="small">Flip Dynasty charges a <b>7% selling fee</b>. Price too high and buyers lowball or ignore you; too low and you leave profit behind.</p>
+ <div class="btn-row" style="margin-top:10px"><button class="btn sell" onclick="publishListing('${invId}')">${l?'💾 Update price':'🏷️ Publish listing'}</button><button class="btn ghost" onclick="closeModal()">✕ Cancel</button><button class="btn ghost" onclick="quickSell('${invId}')">⚡ Quick sale (~${money(fair*.82*.93)})</button></div>`)}
+function publishListing(invId){
+ const it=S.inv.find(x=>x.id===invId);if(!it)return;const p=parseFloat($('askPrice').value);
+ if(!(p>0)){toast('Enter a valid asking price.');return}
+ const ex=S.listings.find(x=>x.invId===invId);
+ if(ex){ex.price=p;it.askPrice=p;log(`Updated ${it.item.n} asking price to ${money(p)}.`,'var(--blue)')}
+ else{it.listed=true;it.listingId=uid();it.askPrice=p;it.listedDay=S.day;
+  S.listings.push({id:it.listingId,invId,itemId:it.id,item:it.item,price:p,cost:it.total,quality:it.quality,condition:it.condition,views:Math.floor(rand(5,30)),watchers:0,days:0});
+  log(`Listed ${it.item.i} <b>${it.item.n}</b> at ${money(p)}.`,'var(--blue)')}
+ closeModal();toast('Listing saved.');render()}
+function purgeItem(invId,sysText,exceptThread){
+ S.listings=S.listings.filter(l=>l.invId!==invId);S.offers=S.offers.filter(o=>o.invId!==invId);
+ S.threads.forEach(t=>{if(t.invId===invId&&t.status==='open'&&t.id!==exceptThread){t.status='closed';addMsg(t,'sys',sysText,0)}})}
+function quickSell(invId){
+ const it=S.inv.find(x=>x.id===invId);if(!it)return;
+ const gross=fvInv(it)*rand(.74,.9),fee=gross*.07,net=gross-fee,profit=net-it.total;
+ S.cash+=net;S.stats.sold++;S.stats.profit+=profit;S.stats.bestProfit=Math.max(S.stats.bestProfit,profit);S.xp+=12;
+ purgeItem(invId,'This item is no longer available.');S.inv=S.inv.filter(x=>x.id!==invId);
+ log(`Quick-sold ${it.item.i} <b>${it.item.n}</b> for ${money(gross)}. Fee ${money(fee)}; profit ${money(profit)}.`,profit>=0?'var(--green)':'var(--red)');
+ toast(`Quick sale complete: ${money(net)} received.`);checkLevel();checkAchievements();closeModal();render()}
+function closeListing(listingId){
+ const l=S.listings.find(x=>x.id===listingId);if(!l)return;const it=S.inv.find(x=>x.id===l.invId);if(it){it.listed=false;it.listingId=null}
+ S.listings=S.listings.filter(x=>x.id!==listingId);
+ S.offers=S.offers.filter(o=>{if(o.listingId===listingId){const t=S.threads.find(x=>x.id===o.threadId);if(t&&t.status==='open'){t.status='closed';addMsg(t,'sys','The listing was removed.',0)}return false}return true});
+ log(`Removed listing for ${l.item.n}.`);render()}
+
+/* ---------- threads & offers ---------- */
+function mkMsg(from,text,day,delay){const now=Date.now();return{id:uid(),from,text,day,ts:now,showAt:now+(delay||0),shown:!delay}}
+function newThread(o,it,text,day){
+ return{id:uid(),buyer:o.buyer,city:o.city,rating:o.rating,persona:o.persona,invId:it.id,listingId:o.listingId||null,offerId:o.id,item:{n:it.item.n,i:it.item.i},
+  msgs:[mkMsg('buyer',text,day,0)],unread:1,status:'open',created:day,last:Date.now(),freeShip:false,lied:false,trust:1,nudged:false}}
+function markUnread(th){if(!(S.view==='messages'&&S.openThread===th.id&&!document.hidden))th.unread=(th.unread||0)+1}
+function addMsg(th,from,text,delay){
+ const m=mkMsg(from,text,S.day,delay);th.msgs.push(m);if(th.msgs.length>80)th.msgs.shift();th.last=m.showAt;
+ if(!delay&&from==='buyer')markUnread(th);return m}
+function pendingReply(th){return th.msgs.some(m=>m.from==='buyer'&&!m.shown)}
+function phrase(persona,kind,ctx){return pick(PH[persona][kind]).replace('{amt}',money(ctx.amt||0)).replace('{item}',ctx.item||'item')}
+function buyerQuestions(it,city){
+ const q=['Any scratches or damage I should know about?'];
+ if(it.det.box!==null){q.push('Does it come with the original box?');q.push('Do you have the receipt?')}
+ q.push(city===S.homeCity?'Could I pick it up locally?':`Can you ship it to ${city}?`);return q}
+function activeOfferCount(invId){return S.offers.filter(o=>o.invId===invId).length}
+function createOffer(it,listing){
+ if(activeOfferCount(it.id)>=3)return;
+ const persona=pick(Object.keys(personas)),P=personas[persona],fair=fvInv(it);
+ const maxPay=fair*rand(.86,1.12)*P.flex*(1+.04*lvl('negotiation'));
+ const cap=listing?listing.price:fair*1.1;
+ const o={id:uid(),listingId:listing?listing.id:null,invId:it.id,buyer:pick(buyers),city:Math.random()<.35?S.homeCity:pick(cities),rating:Math.round(rand(3.4,5)*10)/10,
+  amount:Math.max(5,Math.min(cap,maxPay*rand(.66,.9))),maxPay,patience:P.patience,persona,expires:3,agreed:false};
+ let text=phrase(persona,'open',{amt:o.amount,item:it.item.n});
+ if(Math.random()<.5)text+=' '+pick(buyerQuestions(it,o.city));
+ if(!listing)text=text.replace(/^/,'Is your '+it.item.n+' still available? ');
+ o.message=text;const th=newThread(o,it,text,S.day);o.threadId=th.id;
+ S.offers.push(o);S.threads.unshift(th);
+ if(S.threads.length>40){const i=S.threads.map(t=>t.status).lastIndexOf('closed');S.threads.splice(i>=0?i:S.threads.length-1,1)}
+ log(`💬 <b>${o.buyer}</b> ${listing?'made an offer of':'sent a direct offer of'} ${money(o.amount)} for ${it.item.n}.`,'var(--blue)');
+ if(!(S.view==='messages'&&S.openThread===th.id))toast(`💬 New offer from ${o.buyer}: ${money(o.amount)}`)}
+function maybeDirectOffer(){
+ if(!S.inv.length||Math.random()>.4)return;
+ const pool=S.inv.filter(i=>!S.offers.some(o=>o.invId===i.id&&!o.listingId));if(!pool.length)return;createOffer(pick(pool),null)}
+const intents={};
+function parsePrice(t){
+ const re=/(\$)?\s*(\d[\d,]*(?:\.\d+)?)\s*(days?|years?|yrs?|months?|%|percent|gb|tb|hz|mm)?/g,words=/(\$|price|offer|take|deal|counter|final|lowest|best|ask|do it|go for|meet|how about|can do|for)/;
+ let m,best=null;
+ while((m=re.exec(t))){if(m[3])continue;const v=parseFloat(m[2].replace(/,/g,''));if(!(v>=5))continue;if(!m[1]&&v>=1990&&v<=2035)continue;if(m[1]||words.test(t))best=v}
+ return best}
+function evalProposal(o,th,price){
+ const eff=o.maxPay*th.trust*(th.freeShip?1.04:(o.city!==S.homeCity?.98:1));
+ if(price<=o.amount||price<=eff*.97)return{r:'accept',amt:price};
+ if(price<=eff&&Math.random()<.65)return{r:'accept',amt:price};
+ o.patience--;if(o.patience<0)return{r:'walk'};
+ if(price<=eff*1.12){o.amount=Math.max(o.amount,Math.min(price,eff*rand(.94,.99)));return{r:'counter',amt:o.amount}}
+ return{r:'reject',amt:o.amount}}
+function freshBuyerReply(th, text, o, it){
+ const lower=text.toLowerCase(), item=it.item.n, price=money(o.amount), buyer=th.buyer.split(' ')[0];
+ const pool=[];
+ if(/\b(why|reason|because|worth|value|price)\b/.test(lower))pool.push(`I’m weighing the price against the condition and a couple of similar listings for the ${item}. ${price} is the amount I was hoping to stay near, but I can talk it through.`);
+ if(/\b(what|which|how).*(include|included|accessor|come with|comes with)\b|\b(accessor|charger|cable|case)\b/.test(lower))pool.push(`I mainly want to confirm what’s included with the ${item} before deciding. If everything shown is included, that helps me compare it fairly.`);
+ if(/\b(question|ask|anything|details|tell me)\b/.test(lower))pool.push(`A couple of details would help me: how long have you had the ${item}, and has anything been repaired or replaced?`);
+ if(/\b(offer|deal|counter|negot|price|$|cost)\b/.test(lower))pool.push(`I’m interested, just trying to keep within budget. Would you be open to discussing the ${price} offer, or is your asking price firm?`);
+ if(/\b(think|maybe|not sure|unsure|decide)\b/.test(lower))pool.push(`Fair enough. I’m interested in the ${item}, but I want to make sure it’s the right choice. I’ll keep the conversation open for now.`);
+ if(/\b(hi|hey|hello|hei)\b/.test(lower))pool.push(`Hey! Thanks for getting back to me. I’m checking a few things about the ${item} before I make a decision.`);
+ if(/\b(ok|okay|sure|sounds good|got it|understood)\b/.test(lower))pool.push(`Sounds good. I’m following along—just let me know what you can do for the ${item}, and we can see if it works for both of us.`);
+ if(!pool.length)pool.push(...[
+  `Got it, thanks for explaining. I’m still considering the ${item} and comparing it with a few other options.`,
+  `That makes sense. I’m interested in the ${item}; I just want to be sure the price and condition line up before I commit.`,
+  `Thanks for the reply! I’m trying to make a sensible purchase, so I’m looking at the details as well as the price.`,
+  `I see what you mean. If we can find a price that feels fair on both sides, I’d be happy to keep going.`,
+  `Appreciate the info. I haven't decided yet, but your answer helps me understand the listing better.`,
+  `One thing I'm balancing is my budget. The ${item} looks good, so I’m seeing whether we can work out a deal.`,
+  `Okay, that gives me a better picture. I’m interested—what flexibility do you have on the price?`
+ ]);
+ const seen=th.replyHistory||[];const available=pool.filter(r=>!seen.includes(r));const chosen=pick(available.length?available:pool);th.replyHistory=[...seen.slice(-7),chosen];
+ return chosen;
+}
+function planReply(th,text){
+ const o=S.offers.find(x=>x.id===th.offerId),it=S.inv.find(x=>x.id===th.invId);
+ if(!o||!it)return;
+ const t=text.toLowerCase(),det=it.det,P=th.persona,lines=[],has=r=>r.test(t);
+ if(has(/^(hi|hey|hello|hei|good (morning|evening|afternoon))\b/))lines.push(pick(['Hi!','Hey there!','Hello!']));
+ if(has(/(no thanks|not selling|decline|no deal|sold already|changed my mind|sorry,? sold)/)){
+  lines.push(phrase(P,'walk',{}));S.offers=S.offers.filter(x=>x.id!==o.id);th.status='closed';deliver(th,lines,true);return}
+ let boxLine=false;
+ if(has(/\b(no|without|missing)\b[^.!?]{0,12}\bbox\b/)){th.trust*=.98;lines.push('Okay, no box is fine, though it lowers the value a bit for me.');boxLine=true}
+ else if(has(/\bbox\b/)){boxLine=true;if(det.box===true){th.trust=Math.min(1.1,th.trust*1.02);lines.push('Nice, the original box is a plus.')}else if(det.box===false){th.lied=true;lines.push('Great, the box matters to me.')}}
+ if(has(/\b(no|without)\b[^.!?]{0,12}warrant/))lines.push('Understood, no warranty.');
+ else if(has(/warrant/)){if(det.warranty){th.trust=Math.min(1.1,th.trust*1.03);lines.push(`Good to know about the ${det.warranty}-day warranty.`)}else{th.lied=true;lines.push('A warranty would be great.')}}
+ if(has(/\b(no|without|don.?t have)\b[^.!?]{0,12}receipt/))lines.push('No problem about the receipt.');
+ else if(has(/receipt|proof of purchase/)){if(det.receipt){th.trust=Math.min(1.1,th.trust*1.02);lines.push('Good, a receipt gives me peace of mind.')}else{th.lied=true;lines.push('Perfect, a receipt is important to me.')}}
+ if(has(/authentic|genuine|legit/)){th.trust=Math.min(1.1,th.trust*1.02);lines.push('Good, authenticity matters a lot to me.')}
+ if(has(/condition|scratch|damage|dent|work(s|ing)?\b|battery|wear/))lines.push(`Thanks for the details. So it’s in ${it.condition.toLowerCase()} condition — noted.`);
+ else if(!boxLine&&has(/accessor|charger|cable|case|include|come with|comes with|attachment/))lines.push('Thanks, that works for me.');
+ if(has(/photo|pic|image/))lines.push('Yes please, extra photos would help.');
+ if(has(/pick ?up|meet|local|in person|collect/)){
+  if(o.city===S.homeCity)lines.push(`I’m in ${S.homeCity} too, so pickup works. This weekend?`);
+  else lines.push(`I’m in ${o.city}, so pickup is hard. Could you ship it?`)}
+ if(has(/free shipping|shipping (is )?(on me|included|free)|(i|i’ll|i'll|i will) (cover|pay) (the )?shipping/)){th.freeShip=true;lines.push(o.city===S.homeCity?'Shipping isn’t needed for me, but thanks!':'Free shipping, great!')}
+ else if(has(/buyer pays (the )?shipping|you pay (the )?shipping|shipping (is )?extra/)){th.freeShip=false;lines.push('Okay, I can pay for shipping.')}
+ else if(has(/ship|deliver|courier|post\b/)&&!has(/pick ?up/))lines.push(o.city===S.homeCity?'I’m local so I’d rather pick it up.':'I can cover shipping if the price is right.');
+ if(has(/how long|when (can|will)|ship(ping)? time|delivery time|arrive/))lines.push(o.city===S.homeCity?'If we arrange local pickup, we could meet pretty soon—what day works for you?':'Shipping usually takes a few business days, depending on the carrier. Could you share the estimated delivery date?');
+ if(has(/why (is|are) you|why.*price|price.*reason/))lines.push('I’m comparing a few listings and trying to stay within my budget. The condition and included accessories matter to me.');
+ if(has(/think about|let me know|later|tomorrow/))lines.push('No rush. I’ll keep an eye on the chat for a little while, but I may check other listings too.');
+ if(has(/thank(s| you)|appreciate/))lines.push(pick(['You’re welcome! Thanks for answering my questions.','Appreciate the quick reply. I’m still interested.','Thanks, that helps me decide.']));
+ if(has(/what is your|your budget|budget/))lines.push(`I’m hoping to stay around ${money(o.maxPay)} for this item, depending on its condition and what’s included.`);
+ if(has(/battery|health/)&&it.item.c==='electronics')lines.push('Battery condition is important to me. If you know the battery health or how long it lasts, that would help.');
+ if(has(/meet|pickup|pick up|where are you/))lines.push(`I’m based in ${o.city}. We can discuss a public meetup or shipping if that’s easier.`);
+ if(has(/available|still (here|have|for sale)/))lines.push('Great, thanks for confirming.');
+ let price=parsePrice(t);
+ const agreeWord=has(/^\s*(deal|ok|okay|sure|yes|yeah|accepted?|sounds good|fine|you got it|i accept)[.! ]*$/)||has(/\b(i accept|i'll take your offer|i’ll take your offer|accept your offer|deal)\b/);
+ if(price===null&&agreeWord)price=o.amount;
+ if(price!==null){
+  const prev=o.amount,res=evalProposal(o,th,price);
+  if(res.r==='accept'){
+   if(price>prev)S.stats.counterAccepted++;
+   o.amount=price;o.agreed=true;o.expires=Math.max(o.expires,3);
+   lines.push(phrase(P,'accept',{amt:price}));lines.push('SYS:Deal agreed at '+money(price)+'. Press “Complete sale” to get paid.')}
+  else if(res.r==='counter'){o.agreed=false;lines.push(phrase(P,'counter',{amt:res.amt}))}
+  else if(res.r==='reject'){o.agreed=false;lines.push(phrase(P,'reject',{}));lines.push(`My offer of ${money(o.amount)} still stands.`)}
+  else{lines.push(phrase(P,'walk',{}));S.offers=S.offers.filter(x=>x.id!==o.id);th.status='closed';lines.push('SYS:'+th.buyer+' left the conversation.');deliver(th,lines,true);return}
+ }else{
+  if(!lines.length)lines.push(freshBuyerReply(th,text,o,it));
+  if(has(/firm|final|lowest|no lower|non.?negotiable/)&&price===null)lines.push(pick(['I understand. What price would you be comfortable with?','Okay, I respect that. Is there any room at all, or is it fixed?','Got it—thanks for being clear. I’ll decide whether that works for my budget.']))}
+ deliver(th,lines,false)}
+function deliver(th,lines,closing){
+ let d=1400+Math.random()*900;
+ lines.forEach(l=>{if(l.startsWith('SYS:'))addMsg(th,'sys',l.slice(4),d);else addMsg(th,'buyer',l,d);d+=1200+Math.random()*900})}
+function sendReply(txt){
+ const th=S.threads.find(t=>t.id===S.openThread);if(!th||th.status!=='open')return;
+ if(pendingReply(th)){toast('Wait for the buyer to finish replying.');return}
+ const inp=$('replyInput'),text=(txt!==undefined?txt:(inp?inp.value:'')).trim().slice(0,300);if(!text)return;
+ addMsg(th,'me',text,0);S.drafts[th.id]='';S.stats.chats++;
+ planReply(th,text);checkAchievements();render();const i=$('replyInput');if(i)i.focus()}
+function openThreadFn(id){S.openThread=id;const t=S.threads.find(x=>x.id===id);if(t)t.unread=0;render()}
+function deleteThread(id){
+ const th=S.threads.find(t=>t.id===id);if(!th)return;
+ const o=S.offers.find(x=>x.id===th.offerId);
+ if(o&&th.status==='open'){openModal(`<h3>Delete conversation?</h3><p class="small">This also declines ${esc(th.buyer)}’s offer of ${money(o.amount)}.</p><div class="btn-row" style="margin-top:12px"><button class="btn danger" onclick="doDeleteThread('${id}')">🗑 Delete &amp; decline</button><button class="btn ghost" onclick="closeModal()">✕ Cancel</button></div>`);return}
+ doDeleteThread(id)}
+function doDeleteThread(id){
+ S.offers=S.offers.filter(x=>x.threadId!==id);S.threads=S.threads.filter(t=>t.id!==id);delete S.drafts[id];
+ if(S.openThread===id)S.openThread=null;closeModal();toast('Conversation deleted.');render()}
+function markAllRead(){S.threads.forEach(t=>t.unread=0);render()}
+function clearClosed(){const n=S.threads.filter(t=>t.status!=='open').length;if(!n){toast('No closed conversations to clear.');return}
+ S.threads=S.threads.filter(t=>t.status==='open');if(!S.threads.find(t=>t.id===S.openThread))S.openThread=null;toast(`Cleared ${n} closed conversation(s).`);render()}
+function openChatForOffer(offerId){const o=S.offers.find(x=>x.id===offerId);if(!o)return;S.openThread=o.threadId;setView('messages')}
+function closeOfferThread(o,text){const th=S.threads.find(t=>t.id===o.threadId);if(th&&th.status==='open'){th.status='closed';addMsg(th,'sys',text,0)}}
+
+function makeReview(o,it,th){
+ let stars=4.7+rand(-.5,.4);const fair=fvInv(it);
+ if(o.amount>fair*1.12)stars-=.5;if(o.amount<fair*.92)stars+=.2;
+ if(th&&th.lied)stars-=2.1;if(th&&th.freeShip&&o.city!==S.homeCity)stars+=.2;
+ stars=clamp(Math.round(stars),1,5);
+ const text=stars>=5?pick(['Smooth deal, exactly as described!','Great seller, fast and friendly.','Perfect. Would buy again.']):stars===4?pick(['Good transaction, item as expected.','Solid seller, took a little while to coordinate.']):stars===3?pick(['Item was okay but not quite what I expected.','Average experience.']):pick(['Item did not match what I was told. Disappointed.','Not as described.']);
+ S.reviews.unshift({buyer:o.buyer,stars,text,item:it.item.n,day:S.day});S.reviews=S.reviews.slice(0,50);
+ const a=avgRating();S.rep=a?a*20:100;return stars}
+function acceptOffer(offerId){
+ const o=S.offers.find(x=>x.id===offerId);if(!o)return;
+ const it=S.inv.find(x=>x.id===o.invId);if(!it){S.offers=S.offers.filter(x=>x.id!==offerId);render();return}
+ const th=S.threads.find(t=>t.id===o.threadId),local=o.city===S.homeCity;
+ const shipCost=(!local&&th&&th.freeShip&&it.item.ship)?Math.round(it.item.ship*shipFactor()):0;
+ const fee=o.amount*.07,net=o.amount-fee-shipCost,profit=net-it.total;
+ S.cash+=net;S.stats.sold++;S.stats.profit+=profit;S.stats.bestProfit=Math.max(S.stats.bestProfit,profit);S.stats.offersAccepted++;S.stats.shippingPaid+=shipCost;S.xp+=18;
+ const stars=makeReview(o,it,th);
+ purgeItem(it.id,'This item was sold to another buyer.',th&&th.id);S.inv=S.inv.filter(x=>x.id!==it.id);
+ if(th){th.status='sold';addMsg(th,'buyer',phrase(th.persona,'thanks',{amt:o.amount,item:it.item.n}),0);
+  addMsg(th,'sys',`Sold for ${money(o.amount)} • ${local?'local pickup':shipCost?`you paid ${money(shipCost)} shipping`:'buyer paid shipping'} • review: ${'★'.repeat(stars)}${'☆'.repeat(5-stars)}`,0)}
+ log(`✅ Sold ${it.item.i} <b>${it.item.n}</b> to <b>${o.buyer}</b> for ${money(o.amount)}. Fee ${money(fee)}${shipCost?`, shipping ${money(shipCost)}`:''}; profit ${money(profit)}. Review: ${'★'.repeat(stars)}`,profit>=0?'var(--green)':'var(--red)');
+ toast(`Sold ${it.item.n} to ${o.buyer}! ${profit>=0?'Profit':'Loss'} ${money(profit)}`);checkLevel();checkAchievements();render()}
+function counterOffer(offerId){
+ const o=S.offers.find(x=>x.id===offerId);if(!o)return;const it=S.inv.find(x=>x.id===o.invId),l=S.listings.find(x=>x.id===o.listingId);
+ const ask=l?l.price:(it?fvInv(it)*1.05:o.amount*1.2);
+ openModal(`<h3>Counter ${o.buyer}</h3><p class="small">Their offer: <b>${money(o.amount)}</b><br>${l?`Your asking price: <b>${money(l.price)}</b>`:`Est. value: <b>${money(ask)}</b>`}</p>
+ <label class="small">Counteroffer</label><input id="counterAmount" type="number" min="1" value="${Math.round(Math.max(ask*.92,o.amount*1.1))}">
+ <p class="small">Your counter is sent as a chat message — the buyer will reply in Messages.</p>
+ <div style="display:flex;gap:7px;margin-top:10px"><button class="btn sell" onclick="sendCounter('${offerId}')">📨 Send counteroffer</button><button class="btn ghost" onclick="closeModal()">✕ Cancel</button></div>`)}
+function sendCounter(offerId){
+ const o=S.offers.find(x=>x.id===offerId);if(!o)return;const amount=parseFloat($('counterAmount').value);
+ if(!(amount>0)){toast('Enter a valid counteroffer.');return}
+ closeModal();S.openThread=o.threadId;setView('messages');sendReply(`How about ${money(amount)}?`)}
+function declineOffer(offerId){
+ const o=S.offers.find(x=>x.id===offerId);if(!o)return;S.offers=S.offers.filter(x=>x.id!==offerId);
+ const th=S.threads.find(t=>t.id===o.threadId);if(th&&th.status==='open'){th.status='closed';addMsg(th,'sys','You declined this offer.',0);addMsg(th,'buyer',phrase(th.persona,'walk',{}),0)}
+ log(`Declined ${o.buyer}’s offer of ${money(o.amount)}.`);closeModal();render()}
+
+/* ---------- progression ---------- */
+function buyUpgrade(id){
+ const u=upgrades.find(x=>x.id===id),owned=lvl(id),cost=upgradeCost(id);
+ if(S.cash<cost){toast('Not enough cash for that upgrade.');return}
+ S.cash-=cost;S.upgrades[id]=owned+1;S.xp+=25;
+ log(`⬆️ Upgraded <b>${u.name}</b> to level ${owned+1} for ${money(cost)}.`,'var(--gold)');toast(`${u.name} upgraded!`);checkLevel();render()}
+function upgradeCost(id){const u=upgrades.find(x=>x.id===id);return Math.round(u.base*Math.pow(u.growth,lvl(id)))}
+function checkLevel(){const nl=levelFromXp();if(nl>S.level){S.level=nl;const b=50*nl;S.cash+=b;log(`🎉 Level ${nl} reached! Flip Dynasty rewarded you with ${money(b)}.`,'var(--gold)');toast(`Level ${nl}! +${money(b)}`)}}
+function checkAchievements(){
+ const a=S.stats,w=netWorth();
+ const unlock=(k,t,d)=>{if(!S.achievements[k]){S.achievements[k]={title:t,desc:d};log(`🏆 Achievement: <b>${t}</b> — ${d}`,'var(--gold)');toast(`🏆 ${t}`)}};
+ if(a.bought>=1)unlock('firstBuy','First Flip','Buy your first item.');
+ if(a.sold>=1)unlock('firstSale','Cash Out','Complete your first sale.');
+ if(a.sold>=5)unlock('five','Side Hustler','Complete 5 sales.');
+ if(a.sold>=15)unlock('fifteen','Market Regular','Complete 15 sales.');
+ if(a.chats>=1)unlock('chat1','Small Talk','Send your first reply to a buyer.');
+ if(a.counterAccepted>=3)unlock('nego','Silver Tongue','Get 3 counteroffers accepted.');
+ if(a.profit>=500)unlock('profit500','Profit Machine','Earn $500 total profit.');
+ if(a.profit>=2500)unlock('profit2500','Resale Pro','Earn $2,500 total profit.');
+ if(a.scamsAvoided>=1)unlock('scam','Sharp Eye','Avoid a counterfeit purchase.');
+ if(S.reviews.length>=5&&avgRating()>=4.7)unlock('top','Top Rated Seller','Hold a 4.7+ rating over 5 reviews.');
+ if(w>=1000)unlock('1k','Four Figures','Reach $1,000 net worth.');
+ if(w>=10000)unlock('10k','Five Figures','Reach $10,000 net worth.');
+ if(w>=100000)unlock('100k','Six Figures','Reach $100,000 net worth.');
+ if(w>=250000)unlock('250k','Quarter Million','Reach $250,000 net worth.');
+ if(w>=500000)unlock('500k','Half a Million','Reach $500,000 net worth.');
+ if(w>=1000000)unlock('1m','Millionaire','Reach $1,000,000 net worth.');
+ if(w>=10000000)unlock('10m','Tycoon','Reach $10,000,000 net worth.');
+ if(w>=50000000)unlock('50m','Market Mogul','Reach $50,000,000 net worth.');
+ if(w>=100000000)unlock('100m','Mega Empire','Reach $100,000,000 net worth.');
+ if(w>=GOAL&&!S.won){S.won=true;log('🏆 <b>FLIP DYNASTY COMPLETE!</b> You reached $200,000,000 net worth.','var(--gold)');
+  openModal('<h3>🏆 Dynasty Legend!</h3><p class="small">You reached $200,000,000 net worth. You built the ultimate resale empire — keep playing if you want!</p><button class="btn sell" onclick="closeModal()">🚀 Keep reselling</button>')}}
+function randomEvent(){
+ const r=Math.random();
+ if(r<.15){S.inv.forEach(i=>i.quality=clamp(i.quality*1.12,.4,2));log('📈 <b>Viral trend:</b> demand increased across your inventory.','var(--gold)');toast('📈 Viral trend increased demand!')}
+ else if(r<.28){S.inv.forEach(i=>i.quality=clamp(i.quality*.9,.4,2));log('📉 <b>Market cooldown:</b> buyer demand decreased.','var(--red)');toast('📉 Buyer demand cooled down.')}
+ else if(r<.36){const b=Math.round(rand(25,140));S.cash+=b;log(`🎁 A repeat customer sent a ${money(b)} referral bonus.`,'var(--gold)');toast(`Received ${money(b)} referral bonus.`)}
+ else if(r<.44){const f=Math.min(S.cash*.04,110);S.cash-=f;log(`🧾 Platform, payment, and ad fees cost ${money(f)}.`,'var(--red)');toast(`Paid ${money(f)} in fees.`)}
+ else if(r<.5&&S.inv.length){const i=pick(S.inv);
+  if(lvl('logistics')&&Math.random()<Math.min(.9,.4+.15*lvl('logistics')))log(`🚚 Logistics network prevented damage to ${i.item.n}.`,'var(--good)');
+  else{purgeItem(i.id,'This item is no longer available.');S.inv=S.inv.filter(x=>x.id!==i.id);log(`📦 Shipping damage: ${i.item.n} was written off.`,'var(--bad)');toast('A shipment was damaged in transit.')}}
+ else if(r<.58&&S.listings.length){const l=pick(S.listings);l.views+=Math.floor(rand(40,220));l.watchers+=Math.floor(rand(2,18));log(`👀 Your ${l.item.n} listing gained attention: ${l.views} views.`,'var(--blue)')}
+ if(S.day%2===0)refreshMarket(true);
+ S.listings.forEach(l=>{l.days++;l.views+=Math.floor(rand(0,25));if(Math.random()<.05)l.watchers++});
+ S.offers.forEach(o=>o.expires--);
+ const expired=S.offers.filter(o=>o.expires<=0);
+ if(expired.length){expired.forEach(o=>closeOfferThread(o,'The offer expired.'));S.offers=S.offers.filter(x=>x.expires>0);log(`${expired.length} buyer offer(s) expired.`,'var(--red)')}
+ const ar=avgRating(),repBonus=ar?(ar-4.5)*.03:0;
+ S.listings.forEach(l=>{const it=S.inv.find(x=>x.id===l.invId);if(!it)return;l.quality=it.quality;
+  const over=l.price/Math.max(1,fvInv(it));
+  const chance=clamp(.08+(1.25-over)*.13+(it.quality-.9)*.1+.04*lvl('marketing')+repBonus,.01,.5);
+  if(Math.random()<chance)createOffer(it,l)});
+ maybeDirectOffer();
+ S.threads.forEach(th=>{if(th.status!=='open'||th.nudged)return;const last=th.msgs[th.msgs.length-1],o=S.offers.find(x=>x.id===th.offerId);
+  if(o&&last&&last.from==='buyer'&&S.day-last.day>=1&&Math.random()<.6){th.nudged=true;addMsg(th,'buyer',`Just checking in — my offer of ${money(o.amount)} still stands.`,0)}});
+ checkAchievements()}
+function nextDay(){S.day++;driftTrends();randomEvent()}
+
+/* ---------- views ---------- */
+function filteredMarket(){
+ let arr=[...S.market];
+ if(S.category!=='all')arr=arr.filter(x=>x.item.c===S.category);
+ if(S.search){const q=S.search.toLowerCase();arr=arr.filter(x=>(x.item.n+' '+x.seller+' '+x.city+' '+x.description).toLowerCase().includes(q))}
+ if(S.sort==='priceAsc')arr.sort((a,b)=>a.price-b.price);
+ if(S.sort==='priceDesc')arr.sort((a,b)=>b.price-a.price);
+ if(S.sort==='deal')arr.sort((a,b)=>(b.tags.includes('deal')?1:0)-(a.tags.includes('deal')?1:0));
+ if(S.sort==='demand')arr.sort((a,b)=>b.demand-a.demand);
+ return arr}
+function listingCard(l){
+ const total=l.price+l.shipping,value=fvList(l),discount=Math.round((1-l.price/value)*100);
+ const est=lvl('analytics')>=2?`<br>Est. profit if flipped: <b class="${value*.93-total>=0?'good':'bad'}">${money(value*.93-total)}</b>`:'';
+ return`<div class="item"><div class="thumb">${l.item.i}<div class="badges">${l.tags.map(t=>`<span class="tag ${t}">${t}</span>`).join('')}</div></div>
+ <div class="item-body"><div class="title">${l.item.n}</div><div class="meta">${l.item.d}</div>
+ <div class="small">Seller <b>${l.seller}</b> • ⭐ ${l.rating} • ${l.city}<br>${l.condition} • ${l.views} views • ${l.watchers} watching<br>${l.verified?'✅ Verified seller':'⚠️ Unverified seller'}</div>
+ <div class="detail">${detLine(l.det)}</div>
+ <div class="row"><div><div class="price">${money(l.price)}</div><div class="small">${l.shipping?`+ ${money(l.shipping)} shipping`:'No shipping'}<br>${lvl('analytics')?`Fair value: ${money(value)}${discount>0?` • <span class="good">${discount}% below value</span>`:` • <span class="bad">${-discount}% above value</span>`}`:''}${est}</div></div></div>
+ ${bt('buy',`🛒 Buy now · ${money(total)}`,S.cash<total?`need ${money(total-S.cash)} more`:(l.shipping?`incl. ${money(l.shipping)} shipping`:'no shipping'),`${S.cash<total?'disabled ':''}title="Buy this item instantly" onclick="buyListing('${l.id}')"`)}
+ ${bt('ghost','🔎 View details','box, receipt, warranty & more',`title="See the full item details" onclick="viewListing('${l.id}')"`)}</div></div>`}
+function inventoryCard(it){
+ const value=fvInv(it),off=S.offers.filter(o=>o.invId===it.id).length;
+ return`<div class="item"><div class="thumb">${it.item.i}</div><div class="item-body">
+ <div class="title">${it.item.n}</div><div class="meta">${it.condition} • bought day ${it.boughtDay} • held ${S.day-it.boughtDay} day(s)</div>
+ <div class="small">Total cost <b>${money(it.total)}</b><br>Estimated value: <b>${money(value)}</b> (<span class="${value-it.total>=0?'good':'bad'}">${value-it.total>=0?'+':''}${money(value-it.total)}</span>)<br>${it.listed?`Listed at ${money(it.askPrice)}${off?` • ${off} offer(s)`:''}`:'Not listed'}</div>
+ <div class="detail">${detLine(it.det)}</div>
+ ${bt('sell',it.listed?'✏️ Adjust listing':'🏷️ List for sale',`est. value ${money(value)}`,`title="Set your asking price" onclick="openListModal('${it.id}')"`)}
+ ${bt('ghost','⚡ Quick sale',`about ${money(value*.82*.93)} right now`,`title="Sell instantly to a dealer for less" onclick="quickSell('${it.id}')"`)}</div></div>`}
+function myListCard(l){
+ const it=S.inv.find(x=>x.id===l.invId),fair=it?fvInv(it):l.price,over=Math.round((l.price/fair-1)*100),n=S.offers.filter(o=>o.listingId===l.id).length;
+ return`<div class="item"><div class="thumb">${l.item.i}</div><div class="item-body">
+ <div class="title">${l.item.n}</div><div class="meta">${l.condition} • listed day ${it&&it.listedDay?it.listedDay:S.day} • ${l.days} day(s) live</div>
+ <div class="small">Asking <b>${money(l.price)}</b> • cost ${money(l.cost)}<br>${l.views} views • ${l.watchers} watching • ${n} offer(s)<br>${lvl('analytics')?`Fair value ${money(fair)} • ${over>=0?'<span class="bad">'+over+'% above value</span>':'<span class="good">'+Math.abs(over)+'% below value</span>'}`:''}</div>
+ ${bt('sell','✏️ Adjust price',`asking ${money(l.price)}`,`title="Change your asking price" onclick="openListModal('${l.invId}')"`)}
+ ${bt('danger','🗑 Remove listing','back to inventory',`title="Take this listing down" onclick="closeListing('${l.id}')"`)}</div></div>`}
+function offerCard(o){
+ const it=S.inv.find(x=>x.id===o.invId);if(!it)return'';
+ const th=S.threads.find(t=>t.id===o.threadId);
+ return`<div class="msg ${o.agreed?'agreed':''}"><div class="row"><div style="display:flex;gap:9px;align-items:center"><div class="avatar">${o.buyer[0]}</div><div><b>${o.buyer}</b><div class="small">⭐ ${o.rating} • ${o.city}${o.city===S.homeCity?' (local)':''} • expires in ${Math.max(0,o.expires)} day(s)<br><span class="chip p">${personas[o.persona].label}</span>${o.listingId?'<span class="chip">On your listing</span>':'<span class="chip l">Direct offer</span>'}${o.agreed?'<span class="chip l">Deal agreed</span>':''}</div></div></div><div class="price">${money(o.amount)}</div></div>
+ <p class="small">“${esc(th&&th.msgs.length?[...th.msgs].reverse().find(m=>m.from==='buyer'&&m.shown)?.text||o.message:o.message)}”</p><div class="small">Item: ${it.item.i} ${it.item.n} • Your cost: ${money(it.total)} • Net after 7% fee: ${money(o.amount*.93)} • <span class="${o.amount*.93-it.total>=0?'good':'bad'}">${o.amount*.93-it.total>=0?'profit':'loss'} ${money(o.amount*.93-it.total)}</span></div>
+ <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">${bt('buy',o.agreed?'💰 Complete sale':'✓ Accept',`you net ${money(o.amount*.93)}`,`title="Sell at ${money(o.amount)}" onclick="acceptOffer('${o.id}')"`)}${bt('ghost','💬 Chat','reply to buyer',`title="Open the conversation" onclick="openChatForOffer('${o.id}')"`)}${bt('ghost','↔ Counter','suggest your price',`title="Send a counteroffer" onclick="counterOffer('${o.id}')"`)}${bt('danger','✕ Decline','no thanks',`title="Decline this offer" onclick="declineOffer('${o.id}')"`)}</div></div>`}
+function lastShown(th){for(let i=th.msgs.length-1;i>=0;i--)if(th.msgs[i].shown)return th.msgs[i];return null}
+function chatHTML(){
+ const ths=[...S.threads].sort((a,b)=>b.last-a.last);
+ if(!ths.length)return'<p class="small">No conversations yet. List an item from your inventory — buyers will message you with offers and questions, and you can reply here.</p>';
+ let th=ths.find(t=>t.id===S.openThread)||ths[0];S.openThread=th.id;th.unread=0;
+ const list=ths.map(t=>{const m=lastShown(t);return`<div class="thread ${t.id===th.id?'active':''} ${t.status!=='open'?'closed':''}" onclick="openThreadFn('${t.id}')"><div class="avatar">${t.buyer[0]}</div><div class="tx"><b><span>${t.buyer}</span>${t.unread?`<span class="badge">${t.unread}</span>`:''}</b><div>${t.item.i} ${t.item.n}${t.status==='sold'?' • sold':t.status==='closed'?' • closed':''}</div><div>${m?esc((m.from==='me'?'You: ':'')+m.text):''}</div></div><button class="x" title="Delete conversation" onclick="event.stopPropagation();deleteThread('${t.id}')">✕</button></div>`}).join('');
+ const o=S.offers.find(x=>x.id===th.offerId),it=S.inv.find(x=>x.id===th.invId),open=th.status==='open'&&o&&it,pend=pendingReply(th);
+ const vis=th.msgs.filter(m=>m.shown).map(m=>`<div class="bubble ${m.from==='me'?'me':m.from==='sys'?'sys':'them'}">${esc(m.text)}<time>Day ${m.day} · ${fmtTime(m.ts)}</time></div>`).join('');
+ const delBtn=`<button class="btn danger sm" title="Delete this conversation" onclick="deleteThread('${th.id}')">🗑 Delete chat</button>`;
+ let deal='';
+ if(open)deal=`<div class="dealbar ${o.agreed?'agreed':''}"><div class="small">${o.agreed?'✅ <b class="good">Deal agreed</b>':'Current offer'}: <b class="gold">${money(o.amount)}</b> • you net ${money(o.amount*.93)} after fees • <span class="${o.amount*.93-it.total>=0?'good':'bad'}">${o.amount*.93-it.total>=0?'profit':'loss'} ${money(o.amount*.93-it.total)}</span></div><div class="btn-row">${bt('buy sm',o.agreed?'💰 Complete sale':'✓ Accept offer',`you net ${money(o.amount*.93)}`,`title="Sell at ${money(o.amount)}" onclick="acceptOffer('${o.id}')"`)}${bt('ghost sm','↔ Counter','your price',`title="Send a counteroffer" onclick="counterOffer('${o.id}')"`)}${bt('danger sm','✕ Decline','no thanks',`title="Decline this offer" onclick="declineOffer('${o.id}')"`)}${delBtn}</div></div>`;
+ else deal=`<div class="dealbar"><div class="small">${th.status==='sold'?'✅ Sold':'This conversation is closed.'}</div><div class="btn-row">${delBtn}</div></div>`;
+ chipList=[];
+ if(open){const ask=(S.listings.find(l=>l.id===o.listingId)||{}).price||fvInv(it)*1.05,mid=Math.round((o.amount+Math.max(ask,o.amount))/2);
+  chipList.push('Yes, it’s still available.');
+  if(mid>o.amount)chipList.push(`Could you meet me at ${money(mid)}?`);
+  chipList.push('My price is firm, sorry.');
+  if(it.det.box===true)chipList.push('It includes the original box.');
+  if(it.det.warranty)chipList.push(`It still has a ${it.det.warranty}-day warranty.`);
+  if(it.det.receipt)chipList.push('I have the receipt.');
+  chipList.push(th.city===S.homeCity?'Local pickup works for me.':'I can offer free shipping.');
+  chipList.push('I can send more photos.');chipList.push('Deal, I accept your offer.')}
+ const chips=open?`<div class="chips">${chipList.map((c,i)=>`<button ${pend?'disabled':''} onclick="sendReply(chipList[${i}])">${esc(c)}</button>`).join('')}</div>`:'';
+ const itemInfo=it?`<div class="detail">${it.item.i} <b>${it.item.n}</b> • ${it.condition} • your cost ${money(it.total)} • est. value ${money(fvInv(it))}<br>${detLine(it.det)}</div>`:'';
+ return`<div class="chat"><div id="threads"><div class="btn-row" style="margin-bottom:8px"><button class="btn ghost sm" title="Clear all unread badges" onclick="markAllRead()">✓ Mark all read</button><button class="btn ghost sm" title="Delete finished and declined chats" onclick="clearClosed()">🧹 Clear closed</button></div>${list}</div><div class="convo">
+ <div class="convo-head"><div style="display:flex;gap:9px;align-items:center"><div class="avatar">${th.buyer[0]}</div><div><b>${th.buyer}</b> <span class="small">⭐ ${th.rating} • ${th.city}${th.city===S.homeCity?' (local)':''}</span><div><span class="chip p">${personas[th.persona].label}</span>${th.status==='sold'?'<span class="chip l">Sold</span>':th.status==='closed'?'<span class="chip">Closed</span>':''}</div></div></div>${itemInfo}</div>
+ ${deal}<div class="msgs" id="msgs">${vis}${pend?'<div class="bubble them typing"><i></i><i></i><i></i></div>':''}</div>${chips}
+ <div class="small" style="padding:0 12px 5px">💬 Buyer replies usually arrive in about 2–5 seconds. Longer messages may appear one at a time.</div><div class="compose"><input id="replyInput" maxlength="300" placeholder="${open?'Write a reply… (e.g. “I can do $250”)':'This conversation is closed'}" ${open?'':'disabled'} autocomplete="off"><button class="btn sell" ${open&&!pend?'':'disabled'} title="Send your reply (Enter)" onclick="sendReply()">➤ Send</button></div></div></div>`}
+function dashHTML(){
+ const a=S.stats,ar=avgRating(),invCost=S.inv.reduce((x,i)=>x+i.total,0),invVal=S.inv.reduce((x,i)=>x+fvInv(i),0);
+ const rev=S.reviews.slice(0,5).map(r=>`<div class="ach"><span>${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span><div><b>${r.buyer}</b> <span class="small">on ${r.item} • day ${r.day}</span><div class="small">“${esc(r.text)}”</div></div></div>`).join('')||'<p class="small">No reviews yet. Complete a sale to get one.</p>';
+ return`<div class="statgrid">
+ <div class="stat"><span class="small">Items bought</span><b>${a.bought||0}</b></div><div class="stat"><span class="small">Items sold</span><b>${a.sold||0}</b></div>
+ <div class="stat"><span class="small">Total profit</span><b class="${(a.profit||0)>=0?'good':'bad'}">${money(a.profit||0)}</b></div><div class="stat"><span class="small">Best single profit</span><b class="gold">${money(a.bestProfit||0)}</b></div>
+ <div class="stat"><span class="small">Offers accepted</span><b>${a.offersAccepted||0}</b></div><div class="stat"><span class="small">Counteroffers accepted</span><b>${a.counterAccepted||0}</b></div>
+ <div class="stat"><span class="small">Scams avoided</span><b>${a.scamsAvoided||0}</b></div><div class="stat"><span class="small">Buyer messages sent</span><b>${a.chats||0}</b></div>
+ <div class="stat"><span class="small">Inventory at cost</span><b>${money(invCost)}</b></div><div class="stat"><span class="small">Inventory est. value</span><b>${money(invVal)}</b></div>
+ <div class="stat"><span class="small">Seller rating</span><b>${ar?ar.toFixed(1)+' ⭐ ('+S.reviews.length+')':'No reviews yet'}</b></div><div class="stat"><span class="small">Shipping paid for buyers</span><b>${money(a.shippingPaid||0)}</b></div></div>
+ <h3 style="margin:15px 0 8px;font-size:14px">Recent reviews</h3>${rev}
+ <h3 style="margin:15px 0 8px;font-size:14px">Achievements</h3>
+ ${Object.values(S.achievements).length?Object.values(S.achievements).map(x=>`<div class="ach done"><span>🏆</span><div><b>${x.title}</b><div class="small">${x.desc}</div></div></div>`).join(''):'<p class="small">No achievements unlocked yet.</p>'}
+ <h3 style="margin:15px 0 8px;font-size:14px">Save data</h3>
+ <p class="small">${storageOK?'Your progress is saved automatically every few seconds and after every action.':'<span class="bad">This browser is blocking storage, so autosave cannot work here.</span> Export a save file regularly.'}</p>
+ <div class="btn-row">${bt('ghost','⬇ Export file','download a backup',`title="Download your save as a file" onclick="exportSave()"`)}${bt('ghost','⬆ Import file','restore a backup',`title="Load a save file" onclick="$('importFile').click()"`)}${bt('ghost','📋 Copy save code','to clipboard',`title="Copy your save as text" onclick="copySaveCode()"`)}${bt('ghost','📥 Paste save code','from clipboard',`title="Restore from copied text" onclick="pasteSaveCode()"`)}${bt('danger','🗑 Reset game','start over',`title="Delete progress and restart" onclick="resetGame()"`)}</div>`}
+function render(){
+ const act=document.activeElement,focusReply=act&&act.id==='replyInput',selS=focusReply?act.selectionStart:0,selE=focusReply?act.selectionEnd:0;
+ const ri=$('replyInput');if(ri&&S.openThread)S.drafts[S.openThread]=ri.value;
+ const pm=$('msgs'),wasBottom=!pm||pm.scrollHeight-pm.scrollTop-pm.clientHeight<50,prevTop=pm?pm.scrollTop:0,prevThread=render._t;
+ $('cash').textContent=money(S.cash);$('invCount').textContent=S.inv.length;$('worth').textContent=money(netWorth());$('day').textContent=S.day;$('level').textContent=S.level;
+ const ar=avgRating();$('rating').textContent=ar?ar.toFixed(1):'—';
+ const w=netWorth();$('goalBar').style.width=clamp(w/GOAL*100,0,100)+'%';$('goalText').textContent=`${money(w)} / ${money(GOAL)}`;$('refreshBtn').disabled=S.cash<5;$('scoutBtn').disabled=S.cash<25;$('gigBtn').disabled=S.gigDay===S.day;$('gigBtn').querySelector('.sub').textContent=S.gigDay===S.day?'already done today':'+$15–35 · once a day';
+ const nextMile=MILES.find(m=>m>w);$('goalNext').textContent=nextMile?`Next milestone: ${money(nextMile)}`:'Goal reached! 🏆';
+ document.querySelectorAll('.subnav button').forEach(b=>b.classList.toggle('active',b.dataset.view===S.view));
+ const unread=S.threads.reduce((a,t)=>a+(t.unread||0),0),offerN=S.offers.length;
+ document.querySelector('[data-view=messages]').innerHTML='💬 Messages'+(unread?`<span class="badge">${unread}</span>`:'');
+ document.querySelector('[data-view=offers]').innerHTML='🤝 Offers'+(offerN?`<span class="badge">${offerN}</span>`:'');
+ let title='Live marketplace',note='Prices and buyer demand update every 25 seconds',html='',grid=false,tb='';
+ if(S.view==='inventory'){grid=true;title='My inventory';note=`${S.inv.length} item(s) • ${money(S.inv.reduce((a,i)=>a+i.total,0))} invested`;html=S.inv.length?S.inv.map(inventoryCard).join(''):'<p class="small">No inventory yet. Buy an item from the marketplace.</p>'}
+ else if(S.view==='listings'){grid=true;title='My active listings';note=`${S.listings.length} listing(s)`;html=S.listings.length?S.listings.map(myListCard).join(''):'<p class="small">No active listings. List inventory to attract buyer offers.</p>'}
+ else if(S.view==='offers'){title='Buyer offers';note=`${S.offers.length} active offer(s)`;html=S.offers.length?S.offers.map(offerCard).join(''):'<p class="small">No active offers. List inventory and wait for buyers.</p>'}
+ else if(S.view==='messages'){title='Inbox';note=`${S.threads.length} conversation(s)`;html=chatHTML()}
+ else if(S.view==='upgrades'){title='Business upgrades';note='Permanent improvements to your flipping operation';
+  html=upgrades.map(u=>{const l=lvl(u.id);return`<div class="upgrade"><div class="row"><div><b>${u.icon} ${u.name}</b><div class="small">${u.desc}</div><div class="small gold">Now: ${u.fx(l)} → Next: ${u.fx(l+1)}</div></div><div style="text-align:right"><div class="small">Level ${l}</div>${bt('sell',`⬆️ Upgrade · ${money(upgradeCost(u.id))}`,S.cash<upgradeCost(u.id)?`need ${money(upgradeCost(u.id)-S.cash)} more`:`Lv ${l} → ${l+1}`,`${S.cash<upgradeCost(u.id)?'disabled ':''}title="Buy this upgrade" onclick="buyUpgrade('${u.id}')"`)}</div></div></div>`}).join('')}
+ else if(S.view==='stats'){title='Business dashboard';note=`Day ${S.day} • Level ${S.level}`;html=dashHTML()}
+ else{grid=true;
+  tb=`<div class="filters"><select id="category"><option value="all">All categories</option><option value="electronics">Electronics</option><option value="fashion">Fashion</option><option value="collectibles">Collectibles</option><option value="home">Home</option><option value="tickets">Tickets</option><option value="luxury">Luxury</option></select><select id="sort"><option value="newest">Newest</option><option value="priceAsc">Price: low to high</option><option value="priceDesc">Price: high to low</option><option value="deal">Best deals</option><option value="demand">Highest demand</option></select></div>`;
+  const arr=filteredMarket();html=arr.length?arr.map(listingCard).join(''):'<p class="small">No listings match your filters.</p>'}
+ $('toolbar').innerHTML=tb;if(tb){$('category').value=S.category;$('sort').value=S.sort}
+ $('content').className=grid?'grid':'';
+ $('viewTitle').textContent=title;$('viewNote').textContent=note;$('content').innerHTML=html;
+ $('pulse').innerHTML=CATS.map(c=>{const t=S.trend[c]||1,p=Math.round((t-1)*100);return`<div>${p>=0?'<span class="good">▲':'<span class="bad">▼'} ${Math.abs(p)}%</span> <b>${c}</b></div>`}).join('')+'<div style="margin-top:6px">'+(S.market.slice(0,4).map(l=>`<div>• <b>${l.item.i} ${l.item.n}</b> — ${money(l.price)}${l.tags.includes('deal')?' <span class="good">DEAL</span>':''}</div>`).join('')||'No market data.')+'</div>';
+ const nu=catalog.filter(c=>c.lv>S.level).sort((a,b)=>a.lv-b.lv)[0];if(nu)$('pulse').innerHTML+=`<div style="margin-top:8px">🔓 Next unlock: <b>${nu.i} ${nu.n}</b> at level ${nu.lv}</div>`;
+ $('log').innerHTML=S.log.map(l=>`<div style="${l.c?'border-left:3px solid '+l.c:''}">${l.t}</div>`).join('');
+ // restore chat state
+ const nr=$('replyInput'),nm=$('msgs');
+ if(nr&&S.openThread){nr.value=S.drafts[S.openThread]||'';if(focusReply){nr.focus();try{nr.setSelectionRange(selS,selE)}catch(e){}}}
+ if(nm){if(wasBottom||prevThread!==S.openThread)nm.scrollTop=nm.scrollHeight;else nm.scrollTop=prevTop}
+ render._t=S.view==='messages'?S.openThread:null;
+ save()}
+function viewListing(id){const l=S.market.find(x=>x.id===id);if(!l){toast('That listing is no longer available.');return}
+ const val=fvList(l),d=l.det;
+ openModal(`<h3>${l.item.i} ${l.item.n}</h3><p class="small">${esc(l.description)}</p>
+ <div class="statgrid"><div class="stat"><span class="small">Price</span><b>${money(l.price)}</b></div><div class="stat"><span class="small">Shipping</span><b>${money(l.shipping)}</b></div>
+ <div class="stat"><span class="small">Seller</span><b>${l.seller}</b></div><div class="stat"><span class="small">Rating</span><b>⭐ ${l.rating} ${l.verified?'✅':'⚠️'}</b></div>
+ <div class="stat"><span class="small">Condition</span><b>${l.condition}</b></div><div class="stat"><span class="small">Demand</span><b>${Math.round(l.demand*100)}%</b></div>
+ <div class="stat"><span class="small">Item age</span><b>${d.age} yr</b></div><div class="stat"><span class="small">Location</span><b>${l.city}</b></div>
+ <div class="stat"><span class="small">Box</span><b>${d.box===null?'N/A':d.box?'Included':'No box'}</b></div><div class="stat"><span class="small">Receipt</span><b>${d.receipt?'Yes':'No'}</b></div>
+ <div class="stat"><span class="small">Warranty</span><b>${d.warranty?d.warranty+' days':'None'}</b></div><div class="stat"><span class="small">Extras</span><b style="font-size:13px">${d.accessory}</b></div></div>
+ <p class="small">${esc(d.wear)} Listed ${l.age} hour(s) ago.${l.verified?'':' <span class="bad">Unverified sellers are more likely to sell counterfeits.</span>'}</p>
+ ${lvl('analytics')?`<p class="small">Price analytics: estimated fair value <b>${money(val)}</b>${lvl('analytics')>=2?` • estimated profit <b class="${val*.93-l.price-l.shipping>=0?'good':'bad'}">${money(val*.93-l.price-l.shipping)}</b>`:''}.</p>`:'<p class="small">Buy Price Analytics to reveal fair-value estimates.</p>'}
+ <div style="display:flex;gap:7px;margin-top:12px"><button class="btn buy" onclick="buyListing('${l.id}')">🛒 Buy for ${money(l.price+l.shipping)}</button><button class="btn ghost" onclick="closeModal()">Close</button></div>`)}
+function openModal(h){$('modalBox').innerHTML=h;$('modal').style.display='grid'}
+function closeModal(){$('modal').style.display='none'}
+function setView(v){S.view=v;render()}
+
+/* ---------- events ---------- */
+$('search').oninput=e=>{S.search=e.target.value;if(S.view!=='market')S.view='market';render()};
+document.querySelectorAll('.subnav button').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+document.addEventListener('change',e=>{if(e.target.id==='category'){S.category=e.target.value;render()}if(e.target.id==='sort'){S.sort=e.target.value;render()}});
+document.addEventListener('keydown',e=>{if(e.target.id==='replyInput'&&e.key==='Enter'){e.preventDefault();sendReply()}});
+document.addEventListener('input',e=>{if(e.target.id==='replyInput'&&S.openThread)S.drafts[S.openThread]=e.target.value});
+$('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+$('importFile').onchange=e=>{const f=e.target.files[0];if(f)importSave(f);e.target.value=''};
+$('refreshBtn').onclick=()=>{refreshMarket();render()};$('scoutBtn').onclick=scout;$('gigBtn').onclick=sideGig;
+$('skipBtn').onclick=()=>{tickAt=Date.now()+DAY_MS;nextDay();render()};
+window.addEventListener('beforeunload',save);window.addEventListener('pagehide',save);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();else{const th=S.threads.find(t=>t.id===S.openThread);if(th&&S.view==='messages'){th.unread=0;render()}}});
+setInterval(save,5000);
+setInterval(()=>{
+ const now=Date.now();let changed=false;
+ S.threads.forEach(th=>th.msgs.forEach(m=>{if(!m.shown&&m.showAt<=now){m.shown=true;changed=true;
+  if(m.from==='buyer'){markUnread(th);if(!(S.view==='messages'&&S.openThread===th.id))toast('💬 '+th.buyer+': '+m.text.slice(0,70))}}}));
+ let g=0;while(now>=tickAt&&g++<5){tickAt+=DAY_MS;nextDay();changed=true}
+ if(now>=tickAt)tickAt=now+DAY_MS;
+ if(changed)render();
+ const left=Math.max(0,tickAt-now);$('clock').textContent=Math.ceil(left/1000);$('clockBar').style.width=(100-left/DAY_MS*100)+'%'},700);
+
+
+/* ---------- settings, fullscreen, secret codes ---------- */
+const SECRET_CODES={
+ 'DYNASTYSTART':{cash:2500,xp:100,msg:'Starter boost: +$2,500 and +100 XP.'},
+ 'FLIPBOOST':{cash:10000,xp:250,msg:'Flip boost: +$10,000 and +250 XP.'},
+ 'GOLDENMARKET':{cash:50000,xp:500,msg:'Golden market: +$50,000 and +500 XP.'}
+};
+function openSettings(){openModal(`<h3>⚙️ Settings</h3><p class="small">Game controls and secret codes.</p><div class="btn-row"><button class="btn ghost" onclick="toggleFullscreen()">⛶ Toggle fullscreen</button><button class="btn ghost" onclick="exportSave()">💾 Export save</button><button class="btn ghost" onclick="$('importFile').click();closeModal()">📥 Import save</button></div><hr style="border-color:var(--line);margin:14px 0"><h3>🔐 Secret codes</h3><p class="small">Enter a code below. Each code can only be redeemed once on this browser.</p><input id="secretCodeInput" placeholder="Enter secret code" autocomplete="off" style="text-transform:uppercase"><div class="btn-row" style="margin-top:9px"><button class="btn sell" onclick="redeemSecretCode()">🎁 Redeem code</button><button class="btn ghost" onclick="closeModal()">Close</button></div><p class="small" style="margin-top:12px">Hint: special words related to flipping and dynasty might unlock a boost 👀</p>`)}
+function toggleFullscreen(){const el=document.documentElement;if(!document.fullscreenElement){if(el.requestFullscreen)el.requestFullscreen().catch(()=>toast('Fullscreen is unavailable in this browser.'));else toast('Fullscreen is unavailable in this browser.')}else if(document.exitFullscreen)document.exitFullscreen().catch(()=>{});}
+function updateFullscreenLabel(){const b=$('fullscreenBtn');if(b)b.textContent=document.fullscreenElement?'⛶ Exit fullscreen':'⛶ Fullscreen'}
+function redeemSecretCode(){const input=$('secretCodeInput');if(!input)return;const code=input.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');const reward=SECRET_CODES[code];if(!reward){toast('That code is not recognized.');return}let redeemed=[];try{redeemed=JSON.parse(localStorage.getItem('flipdynasty_redeemed_codes')||'[]')}catch(e){}if(redeemed.includes(code)){toast('You already redeemed that code.');return}redeemed.push(code);try{localStorage.setItem('flipdynasty_redeemed_codes',JSON.stringify(redeemed))}catch(e){}S.cash+=reward.cash;S.xp+=reward.xp;checkLevel();log(`🔐 Secret code redeemed: ${esc(code)} — ${money(reward.cash)} reward.`,'var(--gold)');save();closeModal();render();toast(reward.msg)}
+$('settingsBtn').onclick=openSettings;$('fullscreenBtn').onclick=toggleFullscreen;document.addEventListener('fullscreenchange',updateFullscreenLabel);
+
+/* ---------- start ---------- */
+load();
+if(!S.market.length)refreshMarket(true);
+if(!S.log.length)log('Welcome to <b>Flip Dynasty</b>. You start with $100. Find undervalued products, list them, chat and negotiate with buyers, upgrade your business, unlock rare assets, and build toward $200,000,000 net worth.');
+$('search').value=S.search||'';
+tickAt=Date.now()+DAY_MS;
+render();
+const launch=$('startup');if(launch)setTimeout(()=>launch.classList.add('hide'),1900);
+</script>
+</body>
+</html>
