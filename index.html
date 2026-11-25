@@ -881,29 +881,32 @@ function runAdminCommand(){
  let command=(parts.shift()||'').toLowerCase().replace(/^\//,'');
  if(command==='set'&&parts[0]?.toLowerCase()==='cash'){command='setcash';parts.shift()}
  if(command==='add'&&parts[0]?.toLowerCase()==='cash'){command='give';parts.shift()}
- const amountText=(parts[0]||'0').replace(/^\$/,'').toLowerCase();
- const amountMatch=amountText.match(/^([0-9]*\.?[0-9]+)(k|m|b|thousand|million|billion)?$/);
- const suffix=amountMatch?.[2]||'';
- const multiplier=({k:1e3,m:1e6,b:1e9,thousand:1e3,million:1e6,billion:1e9}[suffix]||1);
- const n=Math.max(0,amountMatch?Number(amountMatch[1])*multiplier:Number(amountText)||0);
+ // Accept both compact amounts (1b) and natural-language amounts (1 billion).
+ const suffixes={k:1e3,m:1e6,b:1e9,thousand:1e3,million:1e6,billion:1e9};
+ let amountText=(parts[0]||'').replace(/^\$/,'').toLowerCase();
+ if(parts[1]&&Object.prototype.hasOwnProperty.call(suffixes,parts[1].toLowerCase())){
+   amountText+=parts[1].toLowerCase();parts.splice(0,2);
+ }else if(parts.length){parts.shift()}
+ const amountMatch=amountText.match(/^([0-9]+(?:\.[0-9]+)?)(k|m|b|thousand|million|billion)?$/);
+ const n=amountMatch?Number(amountMatch[1])*(suffixes[amountMatch[2]||'']||1):NaN;
  const cmd='/'+command;
  if(!S.adminUnlocked){toast('Admin access is locked.');return}
- if(cmd==='/help'){toast('/give, /setcash, /multis, /xp, /setlevel, /setrep, /giveitem, /maxupgrades, /unlockall, /secretitems, /nextday, /marketdrop, /refreshmarket, /bonus, /help');return}
- if(cmd==='/give'&&n>0){S.cash+=n;log('👑 Admin: added '+money(n)+' cash.','var(--gold)')}
- else if(cmd==='/setcash'&&n>=0){S.cash=n;log('👑 Admin: cash set to '+money(n)+'.','var(--gold)')}
- else if(cmd==='/multis'&&n>0){S.cash=Math.round(S.cash*n);log('👑 Admin: cash multiplied by '+n+'.','var(--gold)')}
- else if(cmd==='/xp'&&n>0){S.xp+=n;checkLevel();log('👑 Admin: added '+n+' XP.','var(--gold)')}
+ if(cmd==='/help'){toast('/give, /setcash, /set cash, /multis, /xp, /setlevel, /setrep, /giveitem, /maxupgrades, /unlockall, /secretitems, /nextday, /marketdrop, /refreshmarket, /bonus, /help');return}
+ if(cmd==='/give'&&Number.isFinite(n)&&n>0){S.cash+=n;log('👑 Admin: added '+money(n)+' cash.','var(--gold)')}
+ else if(cmd==='/setcash'&&Number.isFinite(n)&&n>=0){S.cash=n;log('👑 Admin: cash set to '+money(n)+'.','var(--gold)')}
+ else if(cmd==='/multis'&&Number.isFinite(n)&&n>0){S.cash=Math.round(S.cash*n);log('👑 Admin: cash multiplied by '+n+'.','var(--gold)')}
+ else if(cmd==='/xp'&&Number.isFinite(n)&&n>0){S.xp+=n;checkLevel();log('👑 Admin: added '+n+' XP.','var(--gold)')}
  else if(cmd==='/maxupgrades'){upgrades.forEach(u=>S.upgrades[u.id]=10);log('👑 Admin: all business upgrades set to level 10.','var(--gold)')}
  else if(cmd==='/unlockall'){S.level=99;S.xp=Math.max(S.xp,9800);log('👑 Admin: all level-locked marketplace items unlocked.','var(--gold)')}
  else if(cmd==='/secretitems'){addSecretItems();return}
  else if(cmd==='/nextday'){nextDay();log('👑 Admin: advanced to the next day.','var(--gold)')}
  else if(cmd==='/marketdrop'){const drop=Array.from({length:8},()=>makeListing(true));S.market.unshift(...drop);S.market=S.market.slice(0,30);log('👑 Admin: spawned 8 rare market deals.','var(--gold)')}
- else if(cmd==='/setlevel'&&n>=1&&n<=99){S.level=Math.floor(n);S.xp=Math.max(S.xp,(S.level-1)*100);log('👑 Admin: level set to '+S.level+'.','var(--gold)')}
- else if(cmd==='/setrep'&&n>=0&&n<=100){S.rep=Math.floor(n);log('👑 Admin: reputation set to '+S.rep+'.','var(--gold)')}
- else if(cmd==='/giveitem'&&parts.length){const query=parts.join(' ').toLowerCase();const item=catalog.find(x=>x.n.toLowerCase()===query)||catalog.find(x=>x.n.toLowerCase().includes(query));if(!item){toast('Item not found. Try its marketplace name.');return}S.inv.push({id:uid(),item,cost:0,shipping:0,total:0,boughtDay:S.day,quality:1,condition:'New',verified:true,det:genDetails(item,'New'),seller:'Admin Gift',listed:false,listingId:null});log('👑 Admin: added '+item.i+' '+item.n+' to your inventory.','var(--gold)')}
+ else if(cmd==='/setlevel'&&Number.isFinite(n)&&n>=1&&n<=99){S.level=Math.floor(n);S.xp=Math.max(S.xp,(S.level-1)*100);log('👑 Admin: level set to '+S.level+'.','var(--gold)')}
+ else if(cmd==='/setrep'&&Number.isFinite(n)&&n>=0&&n<=100){S.rep=Math.floor(n);log('👑 Admin: reputation set to '+S.rep+'.','var(--gold)')}
+ else if(cmd==='/giveitem'&&parts.length){const query=[amountText,...parts].filter(Boolean).join(' ').toLowerCase();const item=catalog.find(x=>x.n.toLowerCase()===query)||catalog.find(x=>x.n.toLowerCase().includes(query));if(!item){toast('Item not found. Try its marketplace name.');return}S.inv.push({id:uid(),item,cost:0,shipping:0,total:0,boughtDay:S.day,quality:1,condition:'New',verified:true,det:genDetails(item,'New'),seller:'Admin Gift',listed:false,listingId:null});log('👑 Admin: added '+item.i+' '+item.n+' to your inventory.','var(--gold)')}
  else if(cmd==='/refreshmarket'){refreshMarket(true);log('👑 Admin: marketplace refreshed.','var(--gold)')}
  else if(cmd==='/bonus'){S.cash+=1000000;S.xp+=1000;checkLevel();log('👑 Admin: bonus granted — $1,000,000 and 1,000 XP.','var(--gold)')}
- else{toast('Unknown command or invalid amount. Type /help for commands.');return}
+ else{toast('Unknown command or invalid amount. Try /setcash 1000000000, /set cash 1 billion, or /help.');return}
  save();render();toast('Admin command executed: '+cmd)}
 function openAdminPanel(){
  if(!S.adminUnlocked){toast('Redeem ADMIN first.');return}
