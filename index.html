@@ -820,12 +820,43 @@ setInterval(()=>{
 const SECRET_CODES={
  'DYNASTYSTART':{cash:2500,xp:100,msg:'Starter boost: +$2,500 and +100 XP.'},
  'FLIPBOOST':{cash:10000,xp:250,msg:'Flip boost: +$10,000 and +250 XP.'},
- 'GOLDENMARKET':{cash:50000,xp:500,msg:'Golden market: +$50,000 and +500 XP.'}
+ 'GOLDENMARKET':{cash:50000,xp:500,msg:'Golden market: +$50,000 and +500 XP.'},
+ 'ADMIN':{admin:true,msg:'Admin access unlocked on this browser. Open Settings → Admin Panel.'}
 };
-function openSettings(){openModal(`<h3>⚙️ Settings</h3><p class="small">Game controls and secret codes.</p><div class="btn-row"><button class="btn ghost" onclick="toggleFullscreen()">⛶ Toggle fullscreen</button><button class="btn ghost" onclick="exportSave()">💾 Export save</button><button class="btn ghost" onclick="$('importFile').click();closeModal()">📥 Import save</button></div><hr style="border-color:var(--line);margin:14px 0"><h3>🔐 Secret codes</h3><p class="small">Enter a code below. Each code can only be redeemed once on this browser.</p><input id="secretCodeInput" placeholder="Enter secret code" autocomplete="off" style="text-transform:uppercase"><div class="btn-row" style="margin-top:9px"><button class="btn sell" onclick="redeemSecretCode()">🎁 Redeem code</button><button class="btn ghost" onclick="closeModal()">Close</button></div><p class="small" style="margin-top:12px">Hint: special words related to flipping and dynasty might unlock a boost 👀</p>`)}
+function openSettings(){openModal(`<h3>⚙️ Settings</h3><p class="small">Game controls and secret codes.</p><div class="btn-row"><button class="btn ghost" onclick="toggleFullscreen()">⛶ Toggle fullscreen</button><button class="btn ghost" onclick="exportSave()">💾 Export save</button><button class="btn ghost" onclick="$('importFile').click();closeModal()">📥 Import save</button>${S.adminUnlocked?'<button class="btn sell" onclick="openAdminPanel()">👑 Admin Panel</button>':''}</div><hr style="border-color:var(--line);margin:14px 0"><h3>🔐 Redeem codes</h3><p class="small">Enter a code below. Each code can only be redeemed once on this browser.</p><input id="secretCodeInput" placeholder="Enter secret code" autocomplete="off" style="text-transform:uppercase"><div class="btn-row" style="margin-top:9px"><button class="btn sell" onclick="redeemSecretCode()">🎁 Redeem code</button><button class="btn ghost" onclick="closeModal()">Close</button></div><p class="small" style="margin-top:12px">Try special codes to unlock rewards.</p>`)}
+function secretItem(name,icon,category,base){return{n:name,i:icon,c:category,base,vol:.12,ship:0,risk:0,d:'A hidden Flip Dynasty collector item.'}}
+const SECRET_ITEMS=[
+ secretItem('VOID CROWN','👑','luxury',2500000),
+ secretItem('GLITCH CUBE','🧊','collectibles',1750000),
+ secretItem('GOLDEN FLIP PHONE','📱','electronics',1250000),
+ secretItem('PHANTOM PROTOTYPE','🛸','collectibles',5000000),
+ secretItem('FOUNDER RELIC','💎','luxury',10000000),
+ secretItem('NEON DRAGON CARD','🐉','collectibles',3200000)
+];
+function addSecretItems(){SECRET_ITEMS.forEach(item=>{if(!S.inv.some(it=>it.item&&it.item.n===item.n)){S.inv.push({id:uid(),item,cost:0,shipping:0,total:0,boughtDay:S.day,quality:1.5,condition:'New',verified:true,det:genDetails(item,'New'),seller:'Flip Dynasty Secret Vault',listed:false,listingId:null})}});log('🗝️ The Secret Vault opened. Hidden collector items added to your inventory.','var(--purple)');toast('Secret Vault unlocked! 6 hidden items added.');checkAchievements();save();render()}
+function runAdminCommand(){
+ const el=$('adminCommandInput');if(!el)return;
+ const raw=el.value.trim(),parts=raw.split(/\\s+/),cmd=(parts.shift()||'').toLowerCase(),n=Math.max(0,Number(parts[0])||0);
+ if(!S.adminUnlocked){toast('Admin access is locked.');return}
+ if(cmd==='/help'){toast('/give, /setcash, /multis, /xp, /maxupgrades, /unlockall, /secretitems, /nextday, /marketdrop');return}
+ if(cmd==='/give'&&n>0){S.cash+=n;log('👑 Admin: added '+money(n)+' cash.','var(--gold)')}
+ else if(cmd==='/setcash'&&n>=0){S.cash=n;log('👑 Admin: cash set to '+money(n)+'.','var(--gold)')}
+ else if(cmd==='/multis'&&n>0){S.cash=Math.round(S.cash*n);log('👑 Admin: cash multiplied by '+n+'.','var(--gold)')}
+ else if(cmd==='/xp'&&n>0){S.xp+=n;checkLevel();log('👑 Admin: added '+n+' XP.','var(--gold)')}
+ else if(cmd==='/maxupgrades'){upgrades.forEach(u=>S.upgrades[u.id]=10);log('👑 Admin: all business upgrades set to level 10.','var(--gold)')}
+ else if(cmd==='/unlockall'){S.level=99;S.xp=Math.max(S.xp,9800);log('👑 Admin: all level-locked marketplace items unlocked.','var(--gold)')}
+ else if(cmd==='/secretitems'){addSecretItems();return}
+ else if(cmd==='/nextday'){nextDay();log('👑 Admin: advanced to the next day.','var(--gold)')}
+ else if(cmd==='/marketdrop'){const drop=Array.from({length:8},()=>makeListing(true));S.market.unshift(...drop);S.market=S.market.slice(0,30);log('👑 Admin: spawned 8 rare market deals.','var(--gold)')}
+ else{toast('Unknown command or invalid amount. Type /help for commands.');return}
+ save();render();toast('Admin command executed: '+cmd)}
+function openAdminPanel(){
+ if(!S.adminUnlocked){toast('Redeem ADMIN first.');return}
+ openModal(`<h3>👑 Flip Dynasty Admin</h3><p class="small">Owner tools and hidden content. Type <b>/help</b> for the command list.</p><div class="statgrid"><div class="stat"><span class="small">Cash</span><b>${money(S.cash)}</b></div><div class="stat"><span class="small">Level</span><b>${S.level}</b></div><div class="stat"><span class="small">Inventory</span><b>${S.inv.length} items</b></div><div class="stat"><span class="small">Day</span><b>${S.day}</b></div></div><label class="small" for="adminCommandInput">Admin command</label><input id="adminCommandInput" placeholder="/give 1000000" autocomplete="off" onkeydown="if(event.key==='Enter')runAdminCommand()"><div class="btn-row" style="margin-top:9px"><button class="btn sell" onclick="runAdminCommand()">▶ Run command</button><button class="btn ghost" onclick="addSecretItems()">🗝️ Secret Vault</button><button class="btn ghost" onclick="closeModal()">Close</button></div><div class="detail" style="margin-top:12px">/give 1000000 · /setcash 500000 · /multis 10 · /xp 5000 · /maxupgrades · /unlockall · /secretitems · /nextday · /marketdrop</div><p class="small" style="margin-top:10px">Note: this is a browser-side admin gate, not secure account authentication. Anyone who can inspect the game's code may discover the ADMIN code.</p>`)
+}
 function toggleFullscreen(){const el=document.documentElement;if(!document.fullscreenElement){if(el.requestFullscreen)el.requestFullscreen().catch(()=>toast('Fullscreen is unavailable in this browser.'));else toast('Fullscreen is unavailable in this browser.')}else if(document.exitFullscreen)document.exitFullscreen().catch(()=>{});}
 function updateFullscreenLabel(){const b=$('fullscreenBtn');if(b)b.textContent=document.fullscreenElement?'⛶ Exit fullscreen':'⛶ Fullscreen'}
-function redeemSecretCode(){const input=$('secretCodeInput');if(!input)return;const code=input.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');const reward=SECRET_CODES[code];if(!reward){toast('That code is not recognized.');return}let redeemed=[];try{redeemed=JSON.parse(localStorage.getItem('flipdynasty_redeemed_codes')||'[]')}catch(e){}if(redeemed.includes(code)){toast('You already redeemed that code.');return}redeemed.push(code);try{localStorage.setItem('flipdynasty_redeemed_codes',JSON.stringify(redeemed))}catch(e){}S.cash+=reward.cash;S.xp+=reward.xp;checkLevel();log(`🔐 Secret code redeemed: ${esc(code)} — ${money(reward.cash)} reward.`,'var(--gold)');save();closeModal();render();toast(reward.msg)}
+function redeemSecretCode(){const input=$('secretCodeInput');if(!input)return;const code=input.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');const reward=SECRET_CODES[code];if(!reward){toast('That code is not recognized.');return}let redeemed=[];try{redeemed=JSON.parse(localStorage.getItem('flipdynasty_redeemed_codes')||'[]')}catch(e){}if(redeemed.includes(code)){toast('You already redeemed that code.');return}redeemed.push(code);try{localStorage.setItem('flipdynasty_redeemed_codes',JSON.stringify(redeemed))}catch(e){}if(reward.admin){S.adminUnlocked=true;log('👑 Admin access unlocked on this browser.','var(--gold)');save();closeModal();render();toast(reward.msg);return}S.cash+=reward.cash;S.xp+=reward.xp;checkLevel();log(`🔐 Secret code redeemed: ${esc(code)} — ${money(reward.cash)} reward.`,'var(--gold)');save();closeModal();render();toast(reward.msg)}
 $('settingsBtn').onclick=openSettings;$('fullscreenBtn').onclick=toggleFullscreen;document.addEventListener('fullscreenchange',updateFullscreenLabel);
 
 /* ---------- start ---------- */
