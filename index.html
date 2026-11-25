@@ -141,7 +141,7 @@ footer{max-width:1280px;margin:auto;padding:16px;color:var(--muted);font-size:12
 <div class="wrap">
 <div><div class="card"><div class="head"><h2 id="viewTitle">Live marketplace</h2><div class="small" id="viewNote"></div></div><div class="body"><div id="toolbar"></div><div class="grid" id="content"></div></div></div></div>
 <aside>
-<div class="card"><div class="head"><h2>Empire milestones</h2></div><div class="body"><p class="small">Reach <b class="gold">$200,000,000</b> net worth.<br><span class="small">Milestones scale from $1K to $200M. Unlock bigger assets as your level rises.</span></p><div class="bar"><i id="goalBar"></i></div><div class="small" id="goalText"></div><div class="small" id="goalNext"></div>
+<div class="card"><div class="head"><h2>Empire milestones</h2></div><div class="body"><p class="small">Reach <b class="gold">$1,000,000,000</b> net worth.<br><span class="small">Milestones scale from $1K to $1B. Unlock bigger assets as your level rises.</span></p><div class="bar"><i id="goalBar"></i></div><div class="small" id="goalText"></div><div class="small" id="goalNext"></div>
 <div class="sidebtns"><button class="btn ghost stack" id="refreshBtn" title="Pay $5 to load a fresh set of listings"><span class="lbl">🔄 Refresh feed</span><span class="sub">new listings · $5</span></button><button class="btn ghost stack" id="scoutBtn" title="Pay $25 to find two off-market deals"><span class="lbl">🔭 Scout deals</span><span class="sub">2 hidden deals · $25</span></button><button class="btn ghost stack" id="gigBtn" title="Earn a little cash once per day"><span class="lbl">🛠️ Side gig</span><span class="sub">+$15–35 · once a day</span></button><button class="btn ghost stack" id="skipBtn" title="Skip ahead to the next day"><span class="lbl">⏭ Next day</span><span class="sub">skip the wait</span></button></div>
 <div class="small" style="margin-top:10px">Next day in <span id="clock">25</span>s</div><div class="bar" style="margin-top:4px"><i id="clockBar" style="background:var(--gold)"></i></div></div></div>
 <div class="card" style="margin-top:13px"><div class="head"><h2>Market pulse</h2></div><div class="body"><div id="pulse" class="small"></div></div></div>
@@ -244,7 +244,8 @@ const catalog=[
  {n:'Luxury Real Estate Portfolio',i:'🏘️',c:'luxury',base:425000000,vol:.08,ship:0,risk:.08,lv:45,d:'A large portfolio of premium properties. Rental income, inspections, title records, and expenses shape the price.'},
  {n:'International Resort Collection',i:'🌍',c:'luxury',base:560000000,vol:.07,ship:0,risk:.08,lv:46,d:'A portfolio of destination resorts. Seasonal performance, permits, staffing, and audited accounts influence value.'},
  {n:'Dynasty Mega Corporation',i:'🏛️',c:'luxury',base:780000000,vol:.06,ship:0,risk:.08,lv:48,d:'The ultimate fictional business acquisition. Assets, revenue, liabilities, contracts, and independent audits determine its valuation.'}
- const buyers=['Maya R.','Jordan T.','Sofia L.','Ethan K.','Priya N.','Liam O.','Ava M.','Noah B.','Zara H.','Omar S.','Chloe W.','Lucas F.','Nina P.','Milo D.','Isla C.','Ravi J.','Ella G.','Felix V.','Hana T.','Diego M.'];
+];
+const buyers=['Maya R.','Jordan T.','Sofia L.','Ethan K.','Priya N.','Liam O.','Ava M.','Noah B.','Zara H.','Omar S.','Chloe W.','Lucas F.','Nina P.','Milo D.','Isla C.','Ravi J.','Ella G.','Felix V.','Hana T.','Diego M.'];
 const first=['Alex','Sam','Chris','Taylor','Jamie','Robin','Morgan','Casey','Riley','Dana','Jules','Reese','Mara','Nico','Leo'];
 const initial='ABCDEFGHJKLMNPRSTVWZ';
 const cities=['Bergen','Oslo','Trondheim','Stavanger','Tromsø','Kristiansand','Drammen','Fredrikstad','Bodø','Ålesund'];
@@ -882,7 +883,7 @@ $('settingsBtn').onclick=openSettings;$('fullscreenBtn').onclick=toggleFullscree
 /* ---------- start ---------- */
 load();
 if(!S.market.length)refreshMarket(true);
-if(!S.log.length)log('Welcome to <b>Flip Dynasty</b>. You start with $100. Find undervalued products, list them, chat and negotiate with buyers, upgrade your business, unlock rare assets, and build toward $200,000,000 net worth.');
+if(!S.log.length)log('Welcome to <b>Flip Dynasty</b>. You start with $100. Find undervalued products, list them, chat and negotiate with buyers, upgrade your business, unlock rare assets, and build toward $1,000,000,000 net worth.');
 $('search').value=S.search||'';
 tickAt=Date.now()+DAY_MS;
 render();
