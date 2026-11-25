@@ -107,7 +107,7 @@ button:disabled .sub{opacity:.9}.item-body>.btn{width:100%}.btn-row{display:flex
 .startup{position:fixed;inset:0;z-index:1000;display:grid;place-content:center;justify-items:center;gap:10px;background:radial-gradient(circle at 50% 45%,#28334b 0,#141824 42%,#090b10 100%);transition:opacity .65s ease,visibility .65s ease;overflow:hidden}
 .startup.hide{opacity:0;visibility:hidden;pointer-events:none}
 .startup-mark{font-size:64px;filter:drop-shadow(0 0 22px #ffc94d55);animation:markPop 1.25s cubic-bezier(.2,.8,.2,1) both,markFloat 2s ease-in-out 1.2s infinite}
-.startup-logo{display:block;width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 0 22px #ffc94d66)}
+.startup-logo{display:block;width:150px;height:150px;max-width:42vw;object-fit:contain;filter:drop-shadow(0 0 26px #ffc94d88);animation:markPop 1.25s cubic-bezier(.2,.8,.2,1) both}
 .startup-title{font-size:clamp(28px,6vw,48px);font-weight:950;letter-spacing:-1.6px;animation:titleReveal .7s .15s both}.startup-title span{color:var(--gold)}
 .startup-sub{font-size:11px;letter-spacing:4px;color:var(--muted);animation:titleReveal .7s .35s both}
 .startup-track{width:min(270px,65vw);height:5px;background:#30394f;border-radius:99px;overflow:hidden;margin-top:22px;animation:titleReveal .5s .4s both}.startup-track i{display:block;width:40%;height:100%;background:linear-gradient(90deg,var(--gold),#fff1a6,var(--gold));border-radius:99px;animation:loadTrack 1.35s ease-in-out both}
@@ -131,7 +131,7 @@ footer{max-width:1280px;margin:auto;padding:16px;color:var(--muted);font-size:12
 </div></div>
 
 <div id="startup" class="startup" aria-label="Loading Flip Dynasty">
-  <div class="startup-mark"><img src="logo.png" alt="Flip Dynasty logo" class="startup-logo"></div>
+  <div class="startup-mark"><img src="logo.png?v=2" alt="Flip Dynasty FD logo" class="startup-logo"></div>
   <div class="startup-title">Flip <span>Dynasty</span></div>
   <div class="startup-sub">BUILD YOUR RESALE EMPIRE</div>
   <div class="startup-track"><i></i></div>
