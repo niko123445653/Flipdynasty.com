@@ -157,7 +157,7 @@ footer{max-width:1280px;margin:auto;padding:16px;color:var(--muted);font-size:12
 <script>
 const SAVE_KEY='flipbay_pro_v4',OLD_KEY='flipbay_pro_v3',DAY_MS=25000;
 const CATS=['electronics','fashion','collectibles','home','tickets','luxury'];
-const GOAL=200000000,MILES=[1000,10000,50000,100000,250000,500000,1000000,2500000,5000000,10000000,25000000,50000000,100000000,150000000,200000000];
+const GOAL=1000000000,MILES=[1000,10000,50000,100000,250000,500000,1000000,2500000,5000000,10000000,25000000,50000000,100000000,150000000,200000000,300000000,500000000,750000000,1000000000];
 const catalog=[
 {n:'AirPods Pro',i:'🎧',c:'electronics',base:165,vol:.18,ship:8,risk:.04,d:'Wireless earbuds with strong resale demand.'},
 {n:'iPhone 15',i:'📱',c:'electronics',base:620,vol:.14,ship:18,risk:.07,d:'Popular smartphone with dependable resale value.'},
@@ -229,7 +229,22 @@ const catalog=[
 {n:'Commercial Building',i:'🏢',c:'luxury',base:24000000,vol:.12,ship:0,risk:.08,lv:32,d:'Major late-game asset. Rental assumptions, inspection reports, legal documents, and operating costs shape valuation.'},
 {n:'Island Resort',i:'🏝️',c:'luxury',base:72000000,vol:.1,ship:0,risk:.08,lv:36,d:'Endgame mega-asset. Financial records, permits, maintenance, and location analysis are part of the fictional deal.'},
  ];
-const buyers=['Maya R.','Jordan T.','Sofia L.','Ethan K.','Priya N.','Liam O.','Ava M.','Noah B.','Zara H.','Omar S.','Chloe W.','Lucas F.','Nina P.','Milo D.','Isla C.','Ravi J.','Ella G.','Felix V.','Hana T.','Diego M.'];
+ {n:'Electric Hypercar',i:'🏎️',c:'luxury',base:1850000,vol:.18,ship:0,risk:.1,lv:24,d:'Ultra-high-performance electric car. Battery report, service records, and verified ownership documents matter.'},
+ {n:'Classic Supercar Collection',i:'🚘',c:'luxury',base:4200000,vol:.16,ship:0,risk:.12,lv:27,d:'A curated collection of rare performance cars. Condition, provenance, storage, and service history affect its value.'},
+ {n:'Private Jet Share',i:'🛩️',c:'luxury',base:7800000,vol:.14,ship:0,risk:.1,lv:29,d:'A fictional fractional aircraft ownership listing. Operating costs, usage terms, and paperwork shape the deal.'},
+ {n:'Mega Penthouse',i:'🏙️',c:'luxury',base:12500000,vol:.13,ship:0,risk:.08,lv:30,d:'Premium city property with skyline views. Inspection, title documents, and ongoing costs matter.'},
+ {n:'Luxury Hotel',i:'🏨',c:'luxury',base:38000000,vol:.12,ship:0,risk:.09,lv:34,d:'Large hospitality property. Occupancy, maintenance, location, and financial records influence valuation.'},
+ {n:'Mountain Resort',i:'⛷️',c:'luxury',base:56000000,vol:.11,ship:0,risk:.09,lv:36,d:'A major resort asset. Seasonal demand, permits, facilities, and operating costs shape its resale value.'},
+ {n:'Superyacht',i:'🛥️',c:'luxury',base:88000000,vol:.1,ship:0,risk:.1,lv:38,d:'A flagship yacht listing. Survey reports, crew costs, maintenance, and ownership records matter.'},
+ {n:'Private Island Estate',i:'🌴',c:'luxury',base:135000000,vol:.09,ship:0,risk:.08,lv:40,d:'A rare island property. Access, utilities, environmental permits, and legal title are essential.'},
+ {n:'Global Art Portfolio',i:'🎨',c:'luxury',base:165000000,vol:.1,ship:0,risk:.15,lv:41,d:'A portfolio of major artworks. Provenance, independent valuations, insurance, and condition reports drive confidence.'},
+ {n:'Luxury Shopping District',i:'🏬',c:'luxury',base:210000000,vol:.09,ship:0,risk:.08,lv:42,d:'A fictional commercial property portfolio. Tenant mix, leases, operating costs, and inspections determine value.'},
+ {n:'Coastal City Hotel Group',i:'🌆',c:'luxury',base:275000000,vol:.09,ship:0,risk:.09,lv:43,d:'A group of premium hotels. Occupancy, staffing, maintenance, and financial statements affect valuation.'},
+ {n:'Private Aviation Fleet',i:'✈️',c:'luxury',base:340000000,vol:.08,ship:0,risk:.1,lv:44,d:'A collection of fictional private aircraft assets. Maintenance logs, operating permissions, and ownership records matter.'},
+ {n:'Luxury Real Estate Portfolio',i:'🏘️',c:'luxury',base:425000000,vol:.08,ship:0,risk:.08,lv:45,d:'A large portfolio of premium properties. Rental income, inspections, title records, and expenses shape the price.'},
+ {n:'International Resort Collection',i:'🌍',c:'luxury',base:560000000,vol:.07,ship:0,risk:.08,lv:46,d:'A portfolio of destination resorts. Seasonal performance, permits, staffing, and audited accounts influence value.'},
+ {n:'Dynasty Mega Corporation',i:'🏛️',c:'luxury',base:780000000,vol:.06,ship:0,risk:.08,lv:48,d:'The ultimate fictional business acquisition. Assets, revenue, liabilities, contracts, and independent audits determine its valuation.'}
+ const buyers=['Maya R.','Jordan T.','Sofia L.','Ethan K.','Priya N.','Liam O.','Ava M.','Noah B.','Zara H.','Omar S.','Chloe W.','Lucas F.','Nina P.','Milo D.','Isla C.','Ravi J.','Ella G.','Felix V.','Hana T.','Diego M.'];
 const first=['Alex','Sam','Chris','Taylor','Jamie','Robin','Morgan','Casey','Riley','Dana','Jules','Reese','Mara','Nico','Leo'];
 const initial='ABCDEFGHJKLMNPRSTVWZ';
 const cities=['Bergen','Oslo','Trondheim','Stavanger','Tromsø','Kristiansand','Drammen','Fredrikstad','Bodø','Ålesund'];
@@ -629,8 +644,8 @@ function checkAchievements(){
  if(w>=10000000)unlock('10m','Tycoon','Reach $10,000,000 net worth.');
  if(w>=50000000)unlock('50m','Market Mogul','Reach $50,000,000 net worth.');
  if(w>=100000000)unlock('100m','Mega Empire','Reach $100,000,000 net worth.');
- if(w>=GOAL&&!S.won){S.won=true;log('🏆 <b>FLIP DYNASTY COMPLETE!</b> You reached $200,000,000 net worth.','var(--gold)');
-  openModal('<h3>🏆 Dynasty Legend!</h3><p class="small">You reached $200,000,000 net worth. You built the ultimate resale empire — keep playing if you want!</p><button class="btn sell" onclick="closeModal()">🚀 Keep reselling</button>')}}
+ if(w>=GOAL&&!S.won){S.won=true;log('🏆 <b>FLIP DYNASTY COMPLETE!</b> You reached $1,000,000,000 net worth.','var(--gold)');
+  openModal('<h3>🏆 Dynasty Legend!</h3><p class="small">You reached $1,000,000,000 net worth. You built the ultimate resale empire — keep playing if you want!</p><button class="btn sell" onclick="closeModal()">🚀 Keep reselling</button>')}}
 function randomEvent(){
  const r=Math.random();
  if(r<.15){S.inv.forEach(i=>i.quality=clamp(i.quality*1.12,.4,2));log('📈 <b>Viral trend:</b> demand increased across your inventory.','var(--gold)');toast('📈 Viral trend increased demand!')}
