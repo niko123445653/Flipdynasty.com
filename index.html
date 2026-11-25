@@ -118,13 +118,38 @@ button:disabled .sub{opacity:.9}.item-body>.btn{width:100%}.btn-row{display:flex
 .chips button{background:#202638;border:1px solid #38405a;border-radius:99px;padding:6px 11px;font-size:12px;font-weight:500}.chips button:hover:not(:disabled){border-color:var(--gold)}
 .compose{display:flex;gap:7px;padding:10px 12px}
 footer{max-width:1280px;margin:auto;padding:16px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+
+/* Optional premium resale marketplace theme */
+body.market-vibe{background:radial-gradient(ellipse at 12% 0%,#1b2d32 0,transparent 38%),#0b1115;color:#f3f7f5}
+body.market-vibe .topbar{background:rgba(9,17,20,.95);border-color:#29433e}
+body.market-vibe .card{background:linear-gradient(145deg,#15221f,#111a19);border-color:#29433e;box-shadow:0 12px 34px #0003}
+body.market-vibe .head{border-color:#29433e}
+body.market-vibe .subnav button{border-color:#315149;background:#14211e}
+body.market-vibe .subnav button.active{background:#b8f36b;border-color:#b8f36b;color:#14200d}
+body.market-vibe .item{background:#182622;border-color:#315149;box-shadow:0 8px 22px #0002;transition:transform .18s,border-color .18s,box-shadow .18s}
+body.market-vibe .item:hover{transform:translateY(-3px);border-color:#8dbd66;box-shadow:0 14px 30px #0005}
+body.market-vibe .thumb{background:linear-gradient(135deg,#263c34,#172520)}
+body.market-vibe .price,body.market-vibe .pill b{color:#c4f47a}
+body.market-vibe .buy{background:linear-gradient(135deg,#c9f77c,#8fd34d);color:#14200d}
+body.market-vibe .sell{background:linear-gradient(135deg,#ffe28a,#eebd4b);color:#241a00}
+body.market-vibe .ghost{background:#20342e;border-color:#3d5b4f}
+body.market-vibe input,body.market-vibe select,body.market-vibe textarea{background:#0e1916;border-color:#345247}
+body.market-vibe .pill{background:#182722;border-color:#315149}
+body.market-vibe .bar{background:#0b1512}
+body.market-vibe .bar i{background:#b8f36b}
+body.market-vibe .detail{background:#0e1916}
+body.market-vibe .modal-box{background:#14221e;border-color:#3b5b4d}
+body.market-vibe .toast{border-color:#476d53}
+body.market-vibe .thread,body.market-vibe .convo{border-color:#315149}
+@media(prefers-reduced-motion:reduce){body.market-vibe .item{transition:none}}
+
 </style>
 </head>
 <body>
 <div class="topbar"><div class="topinner">
 <div class="logo">Flip<span>Dynasty</span></div>
 <div class="search">🔍 <input id="search" placeholder="Search products, sellers, cities…"></div>
-<div class="pill">💵 <b id="cash">$100</b></div><div class="pill">📦 <span id="invCount">0</span></div><div class="pill">📈 <b id="worth">$100</b></div><div class="pill">⭐ <span id="rating">—</span></div><div class="pill">Lv <span id="level">1</span></div><div class="pill">Day <span id="day">1</span></div><div class="pill save" id="saveState">💾 …</div><div class="top-actions"><button class="fullscreen-btn" id="fullscreenBtn" title="Toggle fullscreen">⛶ Fullscreen</button><button class="settings-btn" id="settingsBtn" title="Settings">⚙️ Settings</button></div>
+<div class="pill">💵 <b id="cash">$100</b></div><div class="pill">📦 <span id="invCount">0</span></div><div class="pill">📈 <b id="worth">$100</b></div><div class="pill">⭐ <span id="rating">—</span></div><div class="pill">Lv <span id="level">1</span></div><div class="pill">Day <span id="day">1</span></div><div class="pill save" id="saveState">💾 …</div><div class="top-actions"><button class="fullscreen-btn" id="fullscreenBtn" title="Toggle fullscreen">⛶ Fullscreen</button><button class="settings-btn" id="themeToggle" title="Switch between marketplace and classic design">✨ Marketplace look</button><button class="settings-btn" id="settingsBtn" title="Settings">⚙️ Settings</button></div>
 </div>
 <div class="subnav">
 <button class="active" data-view="market" title="Browse items to buy">🛍️ Marketplace</button><button data-view="inventory" title="Items you own">📦 Inventory</button><button data-view="listings" title="Items you are selling">🏷️ My listings</button><button data-view="offers" title="Buyer offers waiting for you">🤝 Offers</button><button data-view="messages" title="Chat with buyers">💬 Messages</button><button data-view="upgrades" title="Permanent business upgrades">⬆️ Upgrades</button><button data-view="stats" title="Stats, reviews, achievements, save data">📊 Dashboard</button>
@@ -851,7 +876,17 @@ const SECRET_ITEMS=[
 function addSecretItems(){SECRET_ITEMS.forEach(item=>{if(!S.inv.some(it=>it.item&&it.item.n===item.n)){S.inv.push({id:uid(),item,cost:0,shipping:0,total:0,boughtDay:S.day,quality:1.5,condition:'New',verified:true,det:genDetails(item,'New'),seller:'Flip Dynasty Secret Vault',listed:false,listingId:null})}});log('🗝️ The Secret Vault opened. Hidden collector items added to your inventory.','var(--purple)');toast('Secret Vault unlocked! 6 hidden items added.');checkAchievements();save();render()}
 function runAdminCommand(){
  const el=$('adminCommandInput');if(!el)return;
- const raw=el.value.trim(),parts=raw.split(/\\s+/),cmd=(parts.shift()||'').toLowerCase(),n=Math.max(0,Number(parts[0])||0);
+ const raw=el.value.trim();
+ const parts=raw.replace(/,/g,'').split(/\s+/).filter(Boolean);
+ let command=(parts.shift()||'').toLowerCase().replace(/^\//,'');
+ if(command==='set'&&parts[0]?.toLowerCase()==='cash'){command='setcash';parts.shift()}
+ if(command==='add'&&parts[0]?.toLowerCase()==='cash'){command='give';parts.shift()}
+ const amountText=(parts[0]||'0').replace(/^\$/,'').toLowerCase();
+ const amountMatch=amountText.match(/^([0-9]*\.?[0-9]+)(k|m|b|thousand|million|billion)?$/);
+ const suffix=amountMatch?.[2]||'';
+ const multiplier=({k:1e3,m:1e6,b:1e9,thousand:1e3,million:1e6,billion:1e9}[suffix]||1);
+ const n=Math.max(0,amountMatch?Number(amountMatch[1])*multiplier:Number(amountText)||0);
+ const cmd='/'+command;
  if(!S.adminUnlocked){toast('Admin access is locked.');return}
  if(cmd==='/help'){toast('/give, /setcash, /multis, /xp, /setlevel, /setrep, /giveitem, /maxupgrades, /unlockall, /secretitems, /nextday, /marketdrop, /refreshmarket, /bonus, /help');return}
  if(cmd==='/give'&&n>0){S.cash+=n;log('👑 Admin: added '+money(n)+' cash.','var(--gold)')}
@@ -877,6 +912,18 @@ function openAdminPanel(){
 function toggleFullscreen(){const el=document.documentElement;if(!document.fullscreenElement){if(el.requestFullscreen)el.requestFullscreen().catch(()=>toast('Fullscreen is unavailable in this browser.'));else toast('Fullscreen is unavailable in this browser.')}else if(document.exitFullscreen)document.exitFullscreen().catch(()=>{});}
 function updateFullscreenLabel(){const b=$('fullscreenBtn');if(b)b.textContent=document.fullscreenElement?'⛶ Exit fullscreen':'⛶ Fullscreen'}
 function redeemSecretCode(){const input=$('secretCodeInput');if(!input)return;const code=input.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');const reward=SECRET_CODES[code];if(!reward){toast('That code is not recognized.');return}let redeemed=[];try{redeemed=JSON.parse(localStorage.getItem('flipdynasty_redeemed_codes')||'[]')}catch(e){}if(redeemed.includes(code)){toast('You already redeemed that code.');return}redeemed.push(code);try{localStorage.setItem('flipdynasty_redeemed_codes',JSON.stringify(redeemed))}catch(e){}if(reward.admin){S.adminUnlocked=true;log('👑 Admin access unlocked on this browser.','var(--gold)');save();closeModal();render();toast(reward.msg);return}S.cash+=reward.cash;S.xp+=reward.xp;checkLevel();log(`🔐 Secret code redeemed: ${esc(code)} — ${money(reward.cash)} reward.`,'var(--gold)');save();closeModal();render();toast(reward.msg)}
+function applyMarketplaceTheme(){
+ const classic=localStorage.getItem('flipdynasty_theme')==='classic';
+ document.body.classList.toggle('market-vibe',!classic);
+ const button=$('themeToggle');if(button)button.textContent=classic?'✨ Marketplace look':'↩ Classic look';
+}
+$('themeToggle').onclick=()=>{
+ const classic=document.body.classList.contains('market-vibe');
+ localStorage.setItem('flipdynasty_theme',classic?'classic':'market');
+ applyMarketplaceTheme();
+ toast(classic?'Classic design restored.':'Premium marketplace look enabled.');
+};
+applyMarketplaceTheme();
 $('settingsBtn').onclick=openSettings;$('fullscreenBtn').onclick=toggleFullscreen;document.addEventListener('fullscreenchange',updateFullscreenLabel);
 
 /* ---------- start ---------- */
