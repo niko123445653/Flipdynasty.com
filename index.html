@@ -1220,6 +1220,19 @@ applyMarketplaceTheme();
 $('settingsBtn').onclick=openSettings;$('adminQuickBtn').onclick=openAdminPanel;$('fullscreenBtn').onclick=toggleFullscreen;document.addEventListener('fullscreenchange',updateFullscreenLabel);
 
 
+/* Owner key is requested once on this browser and stored locally. The server validates it. */
+function globalAdminHeaders(){
+ let token=localStorage.getItem('fd_global_admin_token')||'';
+ if(!token){
+  token=prompt('One-time owner announcement key setup: paste the key configured in Cloudflare.');
+  if(!token)throw new Error('Owner key setup cancelled.');
+  token=token.trim();
+  if(token.length<32)throw new Error('The owner key must be at least 32 characters.');
+  localStorage.setItem('fd_global_admin_token',token);
+ }
+ return {'content-type':'application/json','authorization':'Bearer '+token};
+}
+
 /* ---------- global announcements ---------- */
 let fdGlobalMessages = [];
 
@@ -1307,7 +1320,7 @@ async function publishGlobalMessage(message){
  if(textMessage.length>500){adminResult('Global messages must be 500 characters or fewer.',true);return}
  if(!S.adminUnlocked){adminResult('Admin access is locked.',true);return}
  try{
-  const response=await fetch('/api/messages',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:textMessage})});
+  const response=await fetch('/api/messages',{method:'POST',headers:globalAdminHeaders(),body:JSON.stringify({message:textMessage})});
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||'Could not publish global message.');
   const input=$('adminCommandInput');if(input)input.value='';
@@ -1322,7 +1335,7 @@ async function sendGlobalMessage(){
  if(!S.adminUnlocked){toast('Admin access is locked.');return}
  if(!message){toast('Write a message first.');return}
  try{
-  const response=await fetch('/api/messages',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message})});
+  const response=await fetch('/api/messages',{method:'POST',headers:globalAdminHeaders(),body:JSON.stringify({message})});
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||'Could not publish message.');
   textInput.value='';
@@ -1334,7 +1347,7 @@ async function sendGlobalMessage(){
 async function deleteGlobalMessage(id){
  if(!S.adminUnlocked){toast('Admin access is locked.');return}
  try{
-  const response=await fetch('/api/messages',{method:'DELETE',headers:{'content-type':'application/json'},body:JSON.stringify({id})});
+  const response=await fetch('/api/messages',{method:'DELETE',headers:globalAdminHeaders(),body:JSON.stringify({id})});
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||'Could not delete message.');
   toast('Global message deleted.');
