@@ -19,6 +19,13 @@ function sameOrigin(request) {
   return !!origin && origin === new URL(request.url).origin;
 }
 
+function isOwner(request, env) {
+  const expected = env.FD_GLOBAL_ADMIN_TOKEN;
+  const supplied = request.headers.get("Authorization") || "";
+  return typeof expected === "string" && expected.length >= 32 &&
+    supplied === `Bearer ${expected}`;
+}
+
 export async function onRequest(context) {
   const { request, env } = context;
   if (!env.DB) return json({ error: "D1 binding DB is missing." }, 500);
@@ -39,6 +46,13 @@ export async function onRequest(context) {
 
     if (!sameOrigin(request)) {
       return json({ error: "Requests must come from the game website." }, 403);
+    }
+
+    if (!env.FD_GLOBAL_ADMIN_TOKEN || String(env.FD_GLOBAL_ADMIN_TOKEN).length < 32) {
+      return json({ error: "Owner announcement security is not configured yet. Set the FD_GLOBAL_ADMIN_TOKEN secret in Cloudflare Pages." }, 503);
+    }
+    if (!isOwner(request, env)) {
+      return json({ error: "Owner authorization required. Set your announcement key once in this browser." }, 401);
     }
 
     if (request.method === "POST") {
