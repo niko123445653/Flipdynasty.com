@@ -1221,7 +1221,6 @@ $('settingsBtn').onclick=openSettings;$('adminQuickBtn').onclick=openAdminPanel;
 
 
 /* ---------- global announcements ---------- */
-let fdGlobalAdminToken = "";
 let fdGlobalMessages = [];
 
 function renderGlobalAdminTools(){
@@ -1231,7 +1230,7 @@ function renderGlobalAdminTools(){
  wrap.id='fdGlobalAdminTools';
  wrap.className='detail';
  wrap.style.marginTop='14px';
- wrap.innerHTML='<h3 style="margin:0 0 8px">📢 Global announcements</h3><p class="small">Publish a message that appears for every player. Owner secret is required to publish or delete.</p><label class="small" for="fdGlobalToken">Owner secret</label><input id="fdGlobalToken" type="password" autocomplete="off" placeholder="Enter your Cloudflare ADMIN_TOKEN" style="width:100%;margin:5px 0 9px"><label class="small" for="fdGlobalText">Message (max 500 characters)</label><textarea id="fdGlobalText" maxlength="500" rows="3" placeholder="Write an announcement for all players..." style="width:100%;box-sizing:border-box;margin:5px 0 8px"></textarea><div class="btn-row"><button class="btn sell" onclick="sendGlobalMessage()">📣 Publish globally</button><button class="btn ghost" onclick="loadGlobalMessages()">↻ Refresh</button></div><div id="fdGlobalAdminList" style="margin-top:10px"></div>';
+ wrap.innerHTML='<h3 style="margin:0 0 8px">📢 Global announcements</h3><p class="small">Use /globalmsg your message in the Admin Command box to announce something to every player.</p><label class="small" for="fdGlobalText">Message (max 500 characters)</label><textarea id="fdGlobalText" maxlength="500" rows="3" placeholder="Write an announcement for all players..." style="width:100%;box-sizing:border-box;margin:5px 0 8px"></textarea><div class="btn-row"><button class="btn sell" onclick="sendGlobalMessage()">📣 Publish globally</button><button class="btn ghost" onclick="loadGlobalMessages()">↻ Refresh</button></div><div id="fdGlobalAdminList" style="margin-top:10px"></div>';
  output.insertAdjacentElement('afterend',wrap);
 }
 
@@ -1306,11 +1305,9 @@ async function publishGlobalMessage(message){
  const textMessage=String(message||'').trim();
  if(!textMessage){adminResult('Usage: /globalmsg hi guys',true);return}
  if(textMessage.length>500){adminResult('Global messages must be 500 characters or fewer.',true);return}
- const token=(($('fdGlobalToken')?.value)||fdGlobalAdminToken||'').trim();
- if(!token){adminResult('Enter your owner secret in the Global announcements box first.',true);return}
- fdGlobalAdminToken=token;
+ if(!S.adminUnlocked){adminResult('Admin access is locked.',true);return}
  try{
-  const response=await fetch('/api/messages',{method:'POST',headers:{'content-type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({message:textMessage})});
+  const response=await fetch('/api/messages',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:textMessage})});
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||'Could not publish global message.');
   const input=$('adminCommandInput');if(input)input.value='';
@@ -1320,14 +1317,12 @@ async function publishGlobalMessage(message){
 }
 
 async function sendGlobalMessage(){
- const tokenInput=$('fdGlobalToken'),textInput=$('fdGlobalText');
- const token=(tokenInput?.value||fdGlobalAdminToken).trim();
+ const textInput=$('fdGlobalText');
  const message=(textInput?.value||'').trim();
- if(!token){toast('Enter your Cloudflare owner secret first.');return}
+ if(!S.adminUnlocked){toast('Admin access is locked.');return}
  if(!message){toast('Write a message first.');return}
- fdGlobalAdminToken=token;
  try{
-  const response=await fetch('/api/messages',{method:'POST',headers:{'content-type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({message})});
+  const response=await fetch('/api/messages',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message})});
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||'Could not publish message.');
   textInput.value='';
@@ -1337,12 +1332,9 @@ async function sendGlobalMessage(){
 }
 
 async function deleteGlobalMessage(id){
- const tokenInput=$('fdGlobalToken');
- const token=(tokenInput?.value||fdGlobalAdminToken).trim();
- if(!token){toast('Enter your Cloudflare owner secret first.');return}
- fdGlobalAdminToken=token;
+ if(!S.adminUnlocked){toast('Admin access is locked.');return}
  try{
-  const response=await fetch('/api/messages',{method:'DELETE',headers:{'content-type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({id})});
+  const response=await fetch('/api/messages',{method:'DELETE',headers:{'content-type':'application/json'},body:JSON.stringify({id})});
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||'Could not delete message.');
   toast('Global message deleted.');
