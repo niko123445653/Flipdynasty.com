@@ -307,6 +307,18 @@ const catalog=[
  {n:'Luxury Real Estate Portfolio',i:'🏘️',c:'luxury',base:425000000,vol:.08,ship:0,risk:.08,lv:45,d:'A large portfolio of premium properties. Rental income, inspections, title records, and expenses shape the price.'},
  {n:'International Resort Collection',i:'🌍',c:'luxury',base:560000000,vol:.07,ship:0,risk:.08,lv:46,d:'A portfolio of destination resorts. Seasonal performance, permits, staffing, and audited accounts influence value.'},
  {n:'Dynasty Mega Corporation',i:'🏛️',c:'luxury',base:780000000,vol:.06,ship:0,risk:.08,lv:48,d:'The ultimate fictional business acquisition. Assets, revenue, liabilities, contracts, and independent audits determine its valuation.'},
+ {n:'Premium Gaming Laptop',i:'💻',c:'electronics',base:1850,vol:.24,ship:28,risk:.09,lv:4,d:'High-performance portable gaming laptop. Battery, thermals, screen, and GPU condition affect value.'},
+ {n:'VR Headset Bundle',i:'🥽',c:'electronics',base:520,vol:.31,ship:18,risk:.1,lv:4,d:'Virtual reality headset with controllers and accessories. Lens condition and included sensors matter.'},
+ {n:'Home Cinema Projector',i:'📽️',c:'electronics',base:890,vol:.25,ship:32,risk:.08,lv:6,d:'Home cinema projector. Lamp hours, resolution, remote, and image quality affect resale.'},
+ {n:'Electric Guitar',i:'🎸',c:'collectibles',base:740,vol:.34,ship:26,risk:.1,lv:5,d:'Electric guitar with amplifier-ready electronics. Check neck, frets, pickups, and case.'},
+ {n:'Rare Comic Collection',i:'📚',c:'collectibles',base:1450,vol:.42,ship:24,risk:.12,lv:8,d:'A curated comic collection. Issue numbers, grading, and protective storage matter.'},
+ {n:'Designer Sofa',i:'🛋️',c:'home',base:2400,vol:.22,ship:180,risk:.06,lv:8,d:'Premium designer sofa. Measurements, upholstery, frame condition, and delivery logistics are important.'},
+ {n:'Luxury Kitchen Bundle',i:'🍳',c:'home',base:3600,vol:.2,ship:140,risk:.07,lv:10,d:'A high-end kitchen appliance bundle with matching premium equipment.'},
+ {n:'Collector Sneaker Vault',i:'👟',c:'fashion',base:6800,vol:.38,ship:35,risk:.18,lv:13,d:'A curated collection of limited sneakers. Sizes, condition, boxes, and authentication affect value.'},
+ {n:'Classic Sports Car',i:'🚘',c:'luxury',base:185000,vol:.19,ship:850,risk:.13,lv:18,d:'A collectible classic sports car. Service records, inspection, and ownership history matter.'},
+ {n:'Boutique Hotel',i:'🏨',c:'luxury',base:12500000,vol:.13,ship:0,risk:.09,lv:31,d:'A boutique hospitality property with rooms, facilities, and operating contracts.'},
+ {n:'Regional Airport',i:'🛫',c:'luxury',base:185000000,vol:.09,ship:0,risk:.1,lv:44,d:'A fictional airport asset with terminals, hangars, service agreements, and operating permits.'},
+ {n:'Global Music Label',i:'🎵',c:'luxury',base:640000000,vol:.08,ship:0,risk:.1,lv:47,d:'A fictional music company with studios, publishing rights, artist contracts, and catalog assets.'},
  {n:'Global Sports Franchise',i:'🏟️',c:'luxury',base:920000000,vol:.07,ship:0,risk:.1,lv:49,d:'A fictional professional sports franchise with teams, facilities, contracts, and global fans.'},
  {n:'Space Tourism Company',i:'🚀',c:'luxury',base:1080000000,vol:.08,ship:0,risk:.12,lv:50,d:'A fictional space-tourism business with launch facilities, research assets, and customer contracts.'},
  {n:'Smart City Portfolio',i:'🌃',c:'luxury',base:1220000000,vol:.07,ship:0,risk:.09,lv:51,d:'A portfolio of fictional smart-city infrastructure, property, and technology assets.'},
@@ -938,8 +950,9 @@ function runAdminCommand(){
     const value=String(parts[0]).replace(/^\$/,'').toLowerCase();
     const match=value.match(/^([0-9]+(?:\.[0-9]+)?)(k|m|b|t|thousand|million|billion|trillion)?$/);
     if(!match)return NaN;
-    const amount=Number(match[1])*(suffixes[match[2]||'']||1);
-    if(parts[1]&&Object.prototype.hasOwnProperty.call(suffixes,parts[1].toLowerCase()))parts.splice(0,2);else parts.shift();
+    let multiplier=suffixes[match[2]||'']||1;
+    if(parts[1]&&Object.prototype.hasOwnProperty.call(suffixes,parts[1].toLowerCase())){multiplier*=suffixes[parts[1].toLowerCase()];parts.splice(0,2)}else parts.shift();
+    const amount=Number(match[1])*multiplier;
     return Number.isFinite(amount)?amount:NaN;
   }
   let args=tokens.slice(),cmd=command;
