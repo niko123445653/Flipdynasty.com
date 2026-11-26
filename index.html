@@ -180,6 +180,133 @@ body.market-vibe .serious-hero{display:flex}
 @media(max-width:1000px){body.market-vibe .wrap{grid-template-columns:1fr}.serious-hero-inner{align-items:flex-start;flex-direction:column}.serious-hero-stat{text-align:left}}
 @media(max-width:620px){body.market-vibe .topinner{padding:10px}.serious-hero{padding:0 10px}.serious-hero-inner{padding:20px}.serious-hero-stat{min-width:0}}
 @media(prefers-reduced-motion:reduce){body.market-vibe .item{transition:none}}
+
+/* Flip Dynasty visual polish: midnight-blue premium exchange */
+body.market-vibe{
+ --bg:#070b14;--surface:#0d1421;--surface2:#121d2e;--surface3:#19283c;
+ --line:#263a55;--text:#edf5ff;--muted:#91a6c2;--green:#55d6b0;
+ --gold:#8fc8ff;--blue:#58b8ff;
+ background:
+  radial-gradient(ellipse at 12% -8%,#163b6540,transparent 34rem),
+  radial-gradient(ellipse at 92% 18%,#12345a25,transparent 30rem),
+  #070b14;
+}
+body.market-vibe .topbar{
+ background:rgba(7,11,20,.88);border-bottom:1px solid #29486a;
+ box-shadow:0 10px 35px #0005;
+}
+body.market-vibe .logo{font-size:20px;letter-spacing:.09em;text-shadow:0 0 24px #58b8ff30}
+body.market-vibe .logo span{color:#65bdff}
+body.market-vibe .search,body.market-vibe .pill{
+ background:linear-gradient(145deg,#14243a,#0d1727);
+ border-color:#2a4565;box-shadow:inset 0 1px #ffffff08;
+}
+body.market-vibe .pill{color:#b8cbe2}
+body.market-vibe .pill b{color:#eaf6ff}
+body.market-vibe .subnav button.active{
+ background:linear-gradient(135deg,#79caff,#398fe0);
+ border-color:#8bd3ff;color:#061426;
+ box-shadow:0 5px 18px #3198e944;
+}
+body.market-vibe .wrap{gap:20px}
+body.market-vibe .card{
+ background:linear-gradient(155deg,#111d2d 0%,#0b1320 100%);
+ border:1px solid #263d59;border-radius:12px;
+ box-shadow:0 18px 48px #0006,inset 0 1px #ffffff08;
+}
+body.market-vibe .head{border-color:#263d59;background:linear-gradient(90deg,#17294266,transparent)}
+body.market-vibe .head h2{color:#dcecff;letter-spacing:.1em}
+body.market-vibe .item{
+ position:relative;background:linear-gradient(155deg,#17263a,#101a29);
+ border:1px solid #2b4564;border-radius:11px;overflow:hidden;
+ box-shadow:0 8px 24px #0003;
+}
+body.market-vibe .item:after{
+ content:"";position:absolute;inset:0;pointer-events:none;opacity:0;
+ background:linear-gradient(115deg,transparent 20%,#8bd3ff12 48%,transparent 72%);
+ transition:opacity .2s;
+}
+body.market-vibe .item:hover{
+ transform:translateY(-5px);border-color:#63baff;
+ background:linear-gradient(155deg,#1b304a,#111d2e);
+ box-shadow:0 18px 36px #0008,0 0 0 1px #58b8ff22;
+}
+body.market-vibe .item:hover:after{opacity:1}
+body.market-vibe .thumb{
+ height:158px;isolation:isolate;overflow:hidden;
+ background:
+  radial-gradient(circle at 50% 58%,#3d8dcc45,transparent 36%),
+  linear-gradient(145deg,#203c5c,#101a2a 72%);
+ border-bottom:1px solid #2a4667;
+}
+body.market-vibe .thumb:before{
+ content:"";position:absolute;width:118px;height:118px;border-radius:50%;
+ border:1px solid #8acbff24;box-shadow:0 0 36px #55baff20,inset 0 0 30px #55baff12;
+}
+body.market-vibe .thumb{ text-shadow:0 8px 22px #000a; }
+body.market-vibe .tag{background:#24364c;color:#c9e4ff;border:1px solid #3a5a7c}
+body.market-vibe .tag.deal{background:#123d3c;color:#7ce6d0;border-color:#287d78}
+body.market-vibe .tag.hot{background:#49301f;color:#ffd09c;border-color:#79512f}
+body.market-vibe .tag.rare{background:#34264f;color:#d0b6ff;border-color:#594080}
+body.market-vibe .price{color:#8fd0ff;text-shadow:0 0 18px #58b8ff25}
+body.market-vibe .buy{
+ background:linear-gradient(135deg,#83d2ff,#459ce9);color:#061629;
+ border:1px solid #a5ddff;box-shadow:0 5px 16px #258bd744;
+}
+body.market-vibe .buy:hover:not(:disabled){filter:brightness(1.08);box-shadow:0 7px 22px #258bd766}
+body.market-vibe .sell{
+ background:linear-gradient(135deg,#edf5ff,#a9c9e9);color:#102036;
+ border:1px solid #fff;
+}
+body.market-vibe .ghost{
+ background:linear-gradient(145deg,#1d3048,#142237);
+ border:1px solid #355575;color:#dcecff;
+}
+body.market-vibe .ghost:hover:not(:disabled){border-color:#70bfff;background:#203b59}
+body.market-vibe .stat,body.market-vibe .upgrade,body.market-vibe .ach{
+ background:linear-gradient(145deg,#182a40,#111d2d);
+ border-color:#2b4563;border-radius:9px;
+}
+body.market-vibe .ach.done{background:linear-gradient(145deg,#123b3b,#10272d);border-color:#287d78}
+body.market-vibe .bar{background:#0a1422;border:1px solid #29415e;height:9px}
+body.market-vibe .bar i{background:linear-gradient(90deg,#398fe0,#7ed5ff);box-shadow:0 0 12px #58b8ff66}
+body.market-vibe .serious-hero-inner{
+ min-height:205px;padding:32px;
+ background:
+  radial-gradient(ellipse at 85% 45%,#267fc533,transparent 38%),
+  linear-gradient(115deg,#172b45 0%,#0d1727 60%,#101e31 100%);
+ border:1px solid #355779;border-radius:13px;
+ box-shadow:0 22px 55px #0007,inset 0 1px #ffffff12;
+}
+body.market-vibe .serious-hero-inner:after{
+ color:#8bcfff0c;text-shadow:0 0 50px #58b8ff20;
+}
+body.market-vibe .serious-kicker{color:#7dcaff}
+body.market-vibe .serious-hero h1{
+ background:linear-gradient(100deg,#fff 12%,#a9d9ff 70%,#6abaff);
+ -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+body.market-vibe .serious-hero-stat strong{color:#8fd0ff;text-shadow:0 0 24px #58b8ff30}
+body.market-vibe .modal-box{
+ background:linear-gradient(155deg,#14243a,#0b1320);
+ border:1px solid #3a5d82;border-radius:13px;
+ box-shadow:0 28px 90px #000b;
+}
+body.market-vibe .toast{
+ background:#12233a;border:1px solid #41698e;border-left:3px solid #70c6ff;
+ box-shadow:0 18px 45px #0009;
+}
+body.market-vibe .detail{background:#0b1524;border:1px solid #253e5d}
+body.market-vibe .thread.active{border-color:#65bdff;box-shadow:0 0 0 2px #58b8ff1c}
+body.market-vibe .avatar{background:#1e3b5c;color:#8bd0ff;border:1px solid #365e84}
+body.market-vibe .bubble.me{background:linear-gradient(135deg,#83d2ff,#459ce9);color:#061629}
+body.market-vibe footer{color:#7f94b0;border-color:#263d59}
+@media(max-width:620px){
+ body.market-vibe .serious-hero-inner{padding:22px}
+ body.market-vibe .thumb{height:138px}
+ body.market-vibe .pill{padding:7px 9px}
+}
+
 </style>
 </head>
 <body>
