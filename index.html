@@ -1197,7 +1197,8 @@ function runAdminCommand(){
 function syncAdminButton(){const b=$('adminQuickBtn');if(b)b.style.display=S.adminUnlocked?'inline-flex':'none'}
 function openAdminPanel(){
  if(!S.adminUnlocked){toast('Redeem ADMIN first.');return}
- openModal(`<h3>👑 Flip Dynasty Admin</h3><p class="small">Owner tools and hidden content. Type <b>/help</b> for the command list.</p><div class="statgrid"><div class="stat"><span class="small">Cash</span><b>${money(S.cash)}</b></div><div class="stat"><span class="small">Level</span><b>${S.level}</b></div><div class="stat"><span class="small">Inventory</span><b>${S.inv.length} items</b></div><div class="stat"><span class="small">Day</span><b>${S.day}</b></div></div><label class="small" for="adminCommandInput">Admin command</label><input id="adminCommandInput" placeholder="/give 1000000" autocomplete="off" onkeydown="if(event.key==='Enter')runAdminCommand()"><div class="btn-row" style="margin-top:9px"><button class="btn sell" onclick="runAdminCommand()">▶ Run command</button><button class="btn ghost" onclick="addSecretItems()">🗝️ Secret Vault</button><button class="btn ghost" onclick="closeModal()">Close</button></div><div id="adminOutput" class="detail" role="status" aria-live="polite" style="margin-top:12px">Ready. Type /help to view all commands.</div><div class="detail" style="margin-top:8px">/give 1b · /set cash 2b · /multis 10 · /xp 5000 · /setlevel 55 · /setrep 100 · /giveitem Gaming PC · /maxupgrades · /unlockall · /secretitems · /nextday · /marketdrop · /refreshmarket · /bonus · /maxcash · /clearinventory · /repair · /help</div><p class="small" style="margin-top:10px">Note: this is a browser-side admin gate, not secure account authentication. Anyone who can inspect the game's code may discover the ADMIN code.</p>`)
+ openModal(`<h3>👑 Flip Dynasty Admin</h3><p class="small">Owner tools and hidden content. Type <b>/help</b> for the command list.</p><div class="statgrid"><div class="stat"><span class="small">Cash</span><b>${money(S.cash)}</b></div><div class="stat"><span class="small">Level</span><b>${S.level}</b></div><div class="stat"><span class="small">Inventory</span><b>${S.inv.length} items</b></div><div class="stat"><span class="small">Day</span><b>${S.day}</b></div></div><label class="small" for="adminCommandInput">Admin command</label><input id="adminCommandInput" placeholder="/give 1000000" autocomplete="off" onkeydown="if(event.key==='Enter')runAdminCommand()"><div class="btn-row" style="margin-top:9px"><button class="btn sell" onclick="runAdminCommand()">▶ Run command</button><button class="btn ghost" onclick="addSecretItems()">🗝️ Secret Vault</button><button class="btn ghost" onclick="closeModal()">Close</button></div><div id="adminOutput" class="detail" role="status" aria-live="polite" style="margin-top:12px">Ready. Type /help to view all commands.</div><div class="detail" style="margin-top:8px">/give 1b · /set cash 2b · /multis 10 · /xp 5000 · /setlevel 55 · /setrep 100 · /giveitem Gaming PC · /maxupgrades · /unlockall · /secretitems · /nextday · /marketdrop · /refreshmarket · /bonus · /maxcash · /clearinventory · /repair · /help</div><p class="small" style="margin-top:10px">Note: this is a browser-side admin gate, not secure account authentication. Anyone who can inspect the game's code may discover the ADMIN code.</p>`);
+ renderGlobalAdminTools();
 }
 function toggleFullscreen(){const el=document.documentElement;if(!document.fullscreenElement){if(el.requestFullscreen)el.requestFullscreen().catch(()=>toast('Fullscreen is unavailable in this browser.'));else toast('Fullscreen is unavailable in this browser.')}else if(document.exitFullscreen)document.exitFullscreen().catch(()=>{});}
 function updateFullscreenLabel(){const b=$('fullscreenBtn');if(b)b.textContent=document.fullscreenElement?'⛶ Exit fullscreen':'⛶ Fullscreen'}
@@ -1216,8 +1217,124 @@ $('themeToggle').onclick=()=>{
 applyMarketplaceTheme();
 $('settingsBtn').onclick=openSettings;$('adminQuickBtn').onclick=openAdminPanel;$('fullscreenBtn').onclick=toggleFullscreen;document.addEventListener('fullscreenchange',updateFullscreenLabel);
 
+
+/* ---------- global announcements ---------- */
+let fdGlobalAdminToken = "";
+let fdGlobalMessages = [];
+
+function renderGlobalAdminTools(){
+ const output=$('adminOutput');
+ if(!output || $('fdGlobalAdminTools')) return;
+ const wrap=document.createElement('section');
+ wrap.id='fdGlobalAdminTools';
+ wrap.className='detail';
+ wrap.style.marginTop='14px';
+ wrap.innerHTML='<h3 style="margin:0 0 8px">📢 Global announcements</h3><p class="small">Publish a message that appears for every player. Owner secret is required to publish or delete.</p><label class="small" for="fdGlobalToken">Owner secret</label><input id="fdGlobalToken" type="password" autocomplete="off" placeholder="Enter your Cloudflare ADMIN_TOKEN" style="width:100%;margin:5px 0 9px"><label class="small" for="fdGlobalText">Message (max 500 characters)</label><textarea id="fdGlobalText" maxlength="500" rows="3" placeholder="Write an announcement for all players..." style="width:100%;box-sizing:border-box;margin:5px 0 8px"></textarea><div class="btn-row"><button class="btn sell" onclick="sendGlobalMessage()">📣 Publish globally</button><button class="btn ghost" onclick="loadGlobalMessages()">↻ Refresh</button></div><div id="fdGlobalAdminList" style="margin-top:10px"></div>';
+ output.insertAdjacentElement('afterend',wrap);
+}
+
+async function loadGlobalMessages(){
+ try{
+  const response=await fetch('/api/messages',{cache:'no-store'});
+  const data=await response.json();
+  if(!response.ok) throw new Error(data.error||'Could not load announcements.');
+  fdGlobalMessages=Array.isArray(data.messages)?data.messages:[];
+  renderGlobalMessageBanner(fdGlobalMessages);
+  renderGlobalAdminMessageList();
+ }catch(error){
+  console.warn('Global announcements:',error);
+ }
+}
+
+function renderGlobalMessageBanner(messages){
+ let box=$('fdGlobalMessages');
+ if(!messages.length){if(box)box.remove();return}
+ if(!box){
+  box=document.createElement('div');
+  box.id='fdGlobalMessages';
+  box.style.cssText='position:fixed;z-index:9998;right:14px;bottom:14px;width:min(360px,calc(100vw - 28px));max-height:38vh;overflow:auto;display:flex;flex-direction:column;gap:8px;pointer-events:none';
+  document.body.appendChild(box);
+ }
+ box.replaceChildren();
+ messages.forEach(item=>{
+  const card=document.createElement('div');
+  card.style.cssText='pointer-events:auto;background:#151c2b;color:#fff;border:1px solid #e6b94f;border-radius:12px;padding:12px 14px;box-shadow:0 8px 28px #0008';
+  const top=document.createElement('div');
+  top.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;color:#f4c85a;font-weight:800;font-size:12px';
+  const heading=document.createElement('span');
+  heading.textContent='📢 GLOBAL ANNOUNCEMENT';
+  const close=document.createElement('button');
+  close.type='button';close.textContent='×';close.setAttribute('aria-label','Dismiss announcement');
+  close.style.cssText='background:transparent;border:0;color:#fff;font-size:20px;cursor:pointer';
+  close.onclick=()=>card.remove();
+  top.append(heading,close);
+  const message=document.createElement('div');
+  message.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.4';
+  message.textContent=item.message||'';
+  card.append(top,message);
+  box.appendChild(card);
+ });
+}
+
+function renderGlobalAdminMessageList(){
+ const list=$('fdGlobalAdminList');
+ if(!list)return;
+ list.replaceChildren();
+ const heading=document.createElement('div');
+ heading.className='small';
+ heading.style.marginBottom='6px';
+ heading.textContent='Published messages ('+fdGlobalMessages.length+')';
+ list.appendChild(heading);
+ if(!fdGlobalMessages.length){
+  const empty=document.createElement('div');empty.className='small';empty.textContent='No global messages yet.';list.appendChild(empty);return;
+ }
+ fdGlobalMessages.forEach(item=>{
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid #ffffff22';
+  const body=document.createElement('div');body.style.cssText='min-width:0;flex:1';
+  const msg=document.createElement('div');msg.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere';msg.textContent=item.message||'';
+  const date=document.createElement('div');date.className='small';date.textContent=item.created_at?new Date(item.created_at).toLocaleString():'';
+  body.append(msg,date);
+  const del=document.createElement('button');del.type='button';del.className='btn ghost';del.textContent='Delete';del.onclick=()=>deleteGlobalMessage(item.id);
+  row.append(body,del);list.appendChild(row);
+ });
+}
+
+async function sendGlobalMessage(){
+ const tokenInput=$('fdGlobalToken'),textInput=$('fdGlobalText');
+ const token=(tokenInput?.value||fdGlobalAdminToken).trim();
+ const message=(textInput?.value||'').trim();
+ if(!token){toast('Enter your Cloudflare owner secret first.');return}
+ if(!message){toast('Write a message first.');return}
+ fdGlobalAdminToken=token;
+ try{
+  const response=await fetch('/api/messages',{method:'POST',headers:{'content-type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({message})});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||'Could not publish message.');
+  textInput.value='';
+  toast('Global message published!');
+  await loadGlobalMessages();
+ }catch(error){toast(error.message||'Could not publish message.')}
+}
+
+async function deleteGlobalMessage(id){
+ const tokenInput=$('fdGlobalToken');
+ const token=(tokenInput?.value||fdGlobalAdminToken).trim();
+ if(!token){toast('Enter your Cloudflare owner secret first.');return}
+ fdGlobalAdminToken=token;
+ try{
+  const response=await fetch('/api/messages',{method:'DELETE',headers:{'content-type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({id})});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||'Could not delete message.');
+  toast('Global message deleted.');
+  await loadGlobalMessages();
+ }catch(error){toast(error.message||'Could not delete message.')}
+}
+
 /* ---------- start ---------- */
 load();
+loadGlobalMessages();
+setInterval(loadGlobalMessages,60000);
 syncAdminButton();
 if(!S.market.length)refreshMarket(true);
 if(!S.log.length)log('Welcome to <b>Flip Dynasty</b>. You start with $100. Find undervalued products, list them, chat and negotiate with buyers, upgrade your business, unlock rare assets, and build toward the final $50,000,000,000 empire goal.');
