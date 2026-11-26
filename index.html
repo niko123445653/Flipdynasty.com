@@ -1227,7 +1227,7 @@ function globalAdminHeaders(){
   token=prompt('One-time owner announcement key setup: paste the key configured in Cloudflare.');
   if(!token)throw new Error('Owner key setup cancelled.');
   token=token.trim();
-  if(token.length<32)throw new Error('The owner key must be at least 32 characters.');
+  if(token.length<8)throw new Error('The owner key must be at least 8 characters.');
   localStorage.setItem('fd_global_admin_token',token);
  }
  return {'content-type':'application/json','authorization':'Bearer '+token};
