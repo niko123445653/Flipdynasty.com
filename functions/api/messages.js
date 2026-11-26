@@ -14,11 +14,9 @@ async function ensureTable(db) {
   `).run();
 }
 
-function authorized(request, env) {
-  const expected = env.ADMIN_TOKEN;
-  const supplied = request.headers.get("Authorization") || "";
-  return typeof expected === "string" && expected.length >= 16 &&
-    supplied === "Bearer " + expected;
+function sameOrigin(request) {
+  const origin = request.headers.get("Origin");
+  return !!origin && origin === new URL(request.url).origin;
 }
 
 export async function onRequest(context) {
@@ -39,8 +37,8 @@ export async function onRequest(context) {
       return json({ error: "Method not allowed." }, 405);
     }
 
-    if (!authorized(request, env)) {
-      return json({ error: "Owner secret is incorrect or not configured." }, 401);
+    if (!sameOrigin(request)) {
+      return json({ error: "Requests must come from the game website." }, 403);
     }
 
     if (request.method === "POST") {
