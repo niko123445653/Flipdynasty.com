@@ -326,6 +326,25 @@ const catalog=[
  {n:'Dynasty Media Empire',i:'🎬',c:'luxury',base:1540000000,vol:.06,ship:0,risk:.08,lv:53,d:'A fictional media group with studios, streaming rights, production assets, and a global audience.'},
  {n:'Worldwide Tech Conglomerate',i:'🌐',c:'luxury',base:1720000000,vol:.06,ship:0,risk:.09,lv:54,d:'A top-tier fictional technology company with software, hardware, patents, and enterprise contracts.'},
  {n:'Ultimate Dynasty Holdings',i:'👑',c:'luxury',base:1950000000,vol:.05,ship:0,risk:.07,lv:55,d:'The final endgame holding company, combining premium property, technology, media, and global businesses.'}
+
+ {n:'Studio Reference Headphones',i:'🎧',c:'electronics',base:420,vol:.22,ship:12,risk:.06,lv:5,d:'Professional studio headphones with replaceable pads, detachable cable, and a detailed sound profile.'},
+ {n:'Mirrorless Cinema Camera',i:'📹',c:'electronics',base:2850,vol:.24,ship:25,risk:.1,lv:9,d:'A compact cinema camera with 4K recording, sensor condition, shutter count, and included media affecting resale value.'},
+ {n:'Limited GPU Founder Edition',i:'🖥️',c:'electronics',base:4200,vol:.3,ship:20,risk:.14,lv:12,d:'A limited-run graphics card. Cooler condition, coil noise, original packaging, and benchmark stability matter.'},
+ {n:'Custom Water-Cooled PC',i:'🖥️',c:'electronics',base:6800,vol:.28,ship:55,risk:.12,lv:16,d:'A custom desktop with premium components, loop maintenance records, temperatures, and component list.'},
+ {n:'Vintage Racing Chronograph',i:'⌚',c:'fashion',base:18500,vol:.23,ship:18,risk:.2,lv:20,d:'A collector chronograph with movement condition, service history, dial originality, and papers affecting value.'},
+ {n:'Archive Runway Coat',i:'🧥',c:'fashion',base:9200,vol:.32,ship:16,risk:.17,lv:14,d:'A rare runway garment. Season, label, fabric, measurements, alterations, and archive provenance matter.'},
+ {n:'Sapphire Signet Ring',i:'💍',c:'luxury',base:27500,vol:.2,ship:10,risk:.16,lv:22,d:'A precious-stone ring with metal purity, stone grading, setting condition, and independent appraisal.'},
+ {n:'Touring Guitar Prototype',i:'🎸',c:'collectibles',base:14500,vol:.3,ship:35,risk:.18,lv:18,d:'A one-off touring instrument with build sheet, repairs, hardware originality, and artist provenance.'},
+ {n:'First Print Sci-Fi Archive',i:'📚',c:'collectibles',base:7800,vol:.36,ship:14,risk:.1,lv:11,d:'A first-print book archive. Edition points, dust-jacket condition, signatures, and grading determine collector value.'},
+ {n:'Museum Display Mech Model',i:'🤖',c:'collectibles',base:12500,vol:.28,ship:45,risk:.08,lv:17,d:'A large limited-edition display model with numbered certificate, complete parts, and original crate.'},
+ {n:'Grand Piano Concert Edition',i:'🎹',c:'home',base:68000,vol:.16,ship:950,risk:.08,lv:25,d:'A concert-grade piano with tuning history, action regulation, finish condition, and specialist transport requirements.'},
+ {n:'Architectural Penthouse Suite',i:'🏙️',c:'luxury',base:18500000,vol:.11,ship:0,risk:.08,lv:35,d:'A fictional premium property asset with floor plan, title review, service charges, and building inspection.'},
+ {n:'Private Island Retreat',i:'🏝️',c:'luxury',base:68000000,vol:.1,ship:0,risk:.1,lv:40,d:'A fictional island property with shoreline survey, access rights, utilities, environmental review, and title documents.'},
+ {n:'National Data Center Portfolio',i:'🗄️',c:'luxury',base:245000000,vol:.09,ship:0,risk:.1,lv:46,d:'A fictional infrastructure portfolio with uptime reports, power capacity, cooling systems, leases, and compliance records.'},
+ {n:'Orbital Research Station',i:'🛰️',c:'luxury',base:780000000,vol:.08,ship:0,risk:.12,lv:52,d:'A fictional aerospace asset with research modules, operating agreements, safety audits, and mission contracts.'},
+ {n:'Continental Rail Network',i:'🚄',c:'luxury',base:1120000000,vol:.07,ship:0,risk:.09,lv:54,d:'A fictional transport network with rolling stock, stations, maintenance depots, access agreements, and operating licenses.'},
+ {n:'Dynasty Diamond Stadium',i:'🏟️',c:'luxury',base:1680000000,vol:.07,ship:0,risk:.08,lv:56,d:'A fictional landmark sports venue with hospitality suites, broadcast rights, event calendar, and facilities.'},
+ {n:'Global Innovation Campus',i:'🌐',c:'luxury',base:2180000000,vol:.06,ship:0,risk:.08,lv:58,d:'A fictional technology campus with research labs, patents, data infrastructure, and long-term enterprise tenants.'}
 ];
 const buyers=['Maya R.','Jordan T.','Sofia L.','Ethan K.','Priya N.','Liam O.','Ava M.','Noah B.','Zara H.','Omar S.','Chloe W.','Lucas F.','Nina P.','Milo D.','Isla C.','Ravi J.','Ella G.','Felix V.','Hana T.','Diego M.'];
 const first=['Alex','Sam','Chris','Taylor','Jamie','Robin','Morgan','Casey','Riley','Dana','Jules','Reese','Mara','Nico','Leo'];
@@ -446,12 +465,24 @@ const GOAL_REWARDS=[
 ];
 function awardGoalReward(stage){const item=GOAL_REWARDS[stage];if(!item)return false;const key='goalReward:'+item.n;if(S.goalRewards&&S.goalRewards[key])return false;S.goalRewards=S.goalRewards||{};S.goalRewards[key]=true;S.inv.push({id:uid(),item,cost:0,shipping:0,total:0,boughtDay:S.day,quality:1.5,condition:'New',verified:true,det:genDetails(item,'New'),seller:'Flip Dynasty Milestone Reward',listed:false,listingId:null});log('🎁 Milestone reward unlocked: <b>'+item.i+' '+item.n+'</b> — added to your inventory.','var(--gold)');return true}
 function genDetails(item,condition){
- const acc={electronics:['Charger included','Case included','Cable only','No accessories'],home:['All attachments','Missing one attachment','Manual included'],fashion:['Dust bag included','Tags attached','No extras','Care card'],collectibles:['Protective case','Sleeved','Certificate of authenticity','Shelf wear on box'],tickets:['Transfer via app','PDF delivery','Seat info verified'],luxury:['Certificate of authenticity','Original papers','Insured delivery','Service records']}[item.c];
- const wear={New:'Factory fresh, no signs of use.','Like new':'Barely used, no visible marks.',Good:'Light signs of use.',Used:'Visible wear but fully functional.','For parts':'Not fully working — sold for parts.'};
- return{box:item.c==='tickets'?null:Math.random()<(condition==='New'?.9:.55),receipt:Math.random()<.4,
-  warranty:(item.c==='electronics'||item.c==='home')&&condition!=='For parts'&&Math.random()<.35?Math.floor(rand(30,300)):0,
-  accessory:pick(acc),wear:wear[condition]||'',age:Math.round(rand(.3,5)*10)/10}}
-function detLine(d){return[d.box===null?'':`📦 Box: ${d.box?'yes':'no'}`,`🧾 Receipt: ${d.receipt?'yes':'no'}`,d.warranty?`🛡️ ${d.warranty}-day warranty`:'🛡️ No warranty',`🔧 ${d.accessory}`].filter(Boolean).join(' • ')}
+ const acc={electronics:['Original charger and cable','Protective case and cable','Charging cable only','No accessories'],home:['Full accessory set','One accessory missing','Manual and original parts','Replacement parts included'],fashion:['Original dust bag','Tags and care card','No extra packaging','Original garment bag'],collectibles:['Protective display case','Archival sleeve','Numbered certificate','Original collector packaging'],tickets:['Verified app transfer','Digital ticket and seat details','Transfer confirmation'],luxury:['Certificate and original papers','Insured delivery documentation','Independent appraisal','Service records']}[item.c]||['Standard accessories','No extra accessories'];
+ const wear={New:'Factory fresh with no visible signs of use.','Like new':'Very light handling; no obvious marks.','Good':'Minor cosmetic wear from normal use.','Used':'Visible cosmetic wear; functionality checked.','For parts':'Not fully functional; intended for repair or parts.'};
+ const serial='FD-'+Math.random().toString(36).slice(2,6).toUpperCase()+'-'+Math.floor(rand(100000,999999));
+ const model=item.model||item.n.toUpperCase().replace(/[^A-Z0-9]+/g,'-').slice(0,24);
+ const authenticity=item.c==='luxury'||item.c==='fashion'||item.c==='collectibles'?(Math.random()<.76?'Third-party check recorded':'Seller-stated; independent check recommended'):(Math.random()<.9?'Serial / device check recorded':'Seller-stated; verify before purchase');
+ const provenance=item.c==='collectibles'?pick(['Private collection','Estate collection','Original owner collection','Specialist dealer archive']):item.c==='luxury'?pick(['Private ownership','Corporate asset transfer','Documented resale history','Broker-managed sale']):pick(['Single owner','Trade-in inventory','Retail return','Verified reseller stock']);
+ return{box:item.c==='tickets'?null:Math.random()<(condition==='New'?.9:.55),receipt:Math.random()<.58,
+  warranty:(item.c==='electronics'||item.c==='home')&&condition!=='For parts'&&Math.random()<.42?Math.floor(rand(30,366)):0,
+  accessory:pick(acc),wear:wear[condition]||'Condition not specified.',age:Math.round(rand(.3,5)*10)/10,
+  model,serial,authenticity,provenance,edition:item.c==='collectibles'||item.c==='fashion'?pick(['Standard release','Limited release','Numbered edition','Archive edition']):'Standard configuration',
+  inspection:pick(['Visual inspection completed','Function test completed','Condition report available','Seller inspection only']),
+  defects:condition==='New'?'No known defects':condition==='Like new'?'No major defects reported':pick(['Minor surface marks','Light edge wear','Small signs of use','Cosmetic wear shown in photos']),
+  dimensions:pick(['Compact / standard size','Full-size format','Dimensions available on request','See seller measurement sheet']),
+  battery:item.c==='electronics'?pick(['Battery health 95–100%','Battery health 85–94%','Battery health not supplied','Not battery powered']):'Not applicable',
+  service:item.c==='luxury'||item.c==='electronics'?pick(['Recent service / maintenance record','Routine maintenance documented','No service record supplied']):'Not applicable'
+ }}
+function detLine(d){return[`📦 Box: ${d.box===null?'N/A':d.box?'yes':'no'}`,`🧾 Receipt: ${d.receipt?'yes':'no'}`,d.warranty?`🛡️ ${d.warranty}-day warranty`:'🛡️ No warranty',`🔧 ${d.accessory||'Not specified'}`,d.authenticity? `🔎 ${d.authenticity}`:''].filter(Boolean).join(' • ')}
+function detailGrid(d){return[['Model / variant',d.model],['Serial number',d.serial],['Edition',d.edition],['Authenticity',d.authenticity],['Provenance',d.provenance],['Inspection',d.inspection],['Known defects',d.defects],['Dimensions',d.dimensions],['Battery',d.battery],['Service history',d.service],['Condition notes',d.wear]].filter(x=>x[1]).map(([k,v])=>`<div class="stat"><span class="small">${k}</span><b style="font-size:12px">${esc(v)}</b></div>`).join('')}
 function fairValue(item,quality,condition,det){
  const mult={New:1.08,'Like new':1.03,Good:.97,Used:.9,'For parts':.68}[condition]||.95;
  let v=item.base*mult*(0.92+quality*.25)*(S.trend[item.c]||1);
@@ -797,7 +828,7 @@ function inventoryCard(it){
  return`<div class="item"><div class="thumb">${it.item.i}</div><div class="item-body">
  <div class="title">${it.item.n}</div><div class="meta">${it.condition} • bought day ${it.boughtDay} • held ${S.day-it.boughtDay} day(s)</div>
  <div class="small">Total cost <b>${money(it.total)}</b><br>Estimated value: <b>${money(value)}</b> (<span class="${value-it.total>=0?'good':'bad'}">${value-it.total>=0?'+':''}${money(value-it.total)}</span>)<br>${it.listed?`Listed at ${money(it.askPrice)}${off?` • ${off} offer(s)`:''}`:'Not listed'}</div>
- <div class="detail">${detLine(it.det)}</div>
+ <div class="detail">${detLine(it.det)}<br><span class="small">${esc(it.det.authenticity||'') } • ${esc(it.det.provenance||'')}</span></div>
  ${bt('sell',it.listed?'✏️ Adjust listing':'🏷️ List for sale',`est. value ${money(value)}`,`title="Set your asking price" onclick="openListModal('${it.id}')"`)}
  ${bt('ghost','⚡ Quick sale',`about ${money(value*.82*.93)} right now`,`title="Sell instantly to a dealer for less" onclick="quickSell('${it.id}')"`)}</div></div>`}
 function myListCard(l){
@@ -900,7 +931,8 @@ function viewListing(id){const l=S.market.find(x=>x.id===id);if(!l){toast('That 
  <div class="stat"><span class="small">Condition</span><b>${l.condition}</b></div><div class="stat"><span class="small">Demand</span><b>${Math.round(l.demand*100)}%</b></div>
  <div class="stat"><span class="small">Item age</span><b>${d.age} yr</b></div><div class="stat"><span class="small">Location</span><b>${l.city}</b></div>
  <div class="stat"><span class="small">Box</span><b>${d.box===null?'N/A':d.box?'Included':'No box'}</b></div><div class="stat"><span class="small">Receipt</span><b>${d.receipt?'Yes':'No'}</b></div>
- <div class="stat"><span class="small">Warranty</span><b>${d.warranty?d.warranty+' days':'None'}</b></div><div class="stat"><span class="small">Extras</span><b style="font-size:13px">${d.accessory}</b></div></div>
+ <div class="stat"><span class="small">Warranty</span><b>${d.warranty?d.warranty+' days':'None'}</b></div><div class="stat"><span class="small">Extras</span><b style="font-size:13px">${esc(d.accessory||'Not specified')}</b></div></div>
+ <h4 style="margin:14px 0 8px">Full item report</h4><div class="statgrid">${detailGrid(d)}</div>
  <p class="small">${esc(d.wear)} Listed ${l.age} hour(s) ago.${l.verified?'':' <span class="bad">Unverified sellers are more likely to sell counterfeits.</span>'}</p>
  ${lvl('analytics')?`<p class="small">Price analytics: estimated fair value <b>${money(val)}</b>${lvl('analytics')>=2?` • estimated profit <b class="${val*.93-l.price-l.shipping>=0?'good':'bad'}">${money(val*.93-l.price-l.shipping)}</b>`:''}.</p>`:'<p class="small">Buy Price Analytics to reveal fair-value estimates.</p>'}
  <div style="display:flex;gap:7px;margin-top:12px"><button class="btn buy" onclick="buyListing('${l.id}')">🛒 Buy for ${money(l.price+l.shipping)}</button><button class="btn ghost" onclick="closeModal()">Close</button></div>`)}
