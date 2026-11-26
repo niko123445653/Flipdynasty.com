@@ -23,7 +23,7 @@ final class ClickerModel: ObservableObject {
         stop()
         permissionMissing = false
         let source = DispatchSource.makeTimerSource(queue: .main)
-        let interval = max(10, Int(1000.0 / cps))
+        let interval = max(2, Int(1000.0 / cps))
         source.schedule(deadline: .now(), repeating: .milliseconds(interval), leeway: .milliseconds(1))
         source.setEventHandler { [weak self] in self?.clickAtPointer() }
         timer = source
@@ -99,13 +99,13 @@ struct ContentView: View {
                         .font(.system(.headline, design: .rounded).monospacedDigit())
                         .foregroundStyle(.cyan)
                 }
-                Slider(value: $model.cps, in: 1...100, step: 1) { _ in
+                Slider(value: $model.cps, in: 1...500, step: 1) { _ in
                     model.updateSpeed()
                 }
                 HStack {
                     Text("1 CPS")
                     Spacer()
-                    Text("100 CPS")
+                    Text("500 CPS")
                 }
                 .font(.caption2)
                 .foregroundStyle(.secondary)
