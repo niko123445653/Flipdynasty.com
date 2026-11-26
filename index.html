@@ -200,7 +200,7 @@ body.market-vibe .serious-hero{display:flex}
   <div class="startup-glow"></div>
 </div>
 
-<section class="serious-hero" aria-label="Flip Dynasty marketplace introduction"><div class="serious-hero-inner"><div><div class="serious-kicker">Independent resale exchange · Est. today</div><h1>Buy smart. Sell higher.</h1><p>A focused marketplace for finding undervalued products, building inventory and growing a serious resale business.</p></div><div class="serious-hero-stat"><span>Empire target</span><strong>$1,000,000,000</strong></div></div></section>
+<section class="serious-hero" aria-label="Flip Dynasty marketplace introduction"><div class="serious-hero-inner"><div><div class="serious-kicker">Independent resale exchange · Est. today</div><h1>Buy smart. Sell higher.</h1><p>A focused marketplace for finding undervalued products, building inventory and growing a serious resale business.</p></div><div class="serious-hero-stat"><span>Empire target</span><strong>$2,000,000,000</strong></div></div></section>
 
 <div class="wrap">
 <div><div class="card"><div class="head"><h2 id="viewTitle">Live marketplace</h2><div class="small" id="viewNote"></div></div><div class="body"><div id="toolbar"></div><div class="grid" id="content"></div></div></div></div>
@@ -928,6 +928,12 @@ const SECRET_CODES={
  'DYNASTY2026':{cash:500000,xp:1500,msg:'Dynasty 2026: +$500,000 and +1,500 XP.'},
  'EMPIRE1M':{cash:1000000,xp:2500,msg:'Empire Million: +$1,000,000 and +2,500 XP.'},
  'VAULTKING':{cash:2500000,xp:5000,msg:'Vault King: +$2,500,000 and +5,000 XP.'},
+ 'HIDDENSTASH':{cash:5000000,xp:7500,msg:'Hidden Stash: +$5,000,000 and +7,500 XP.'},
+ 'MIDNIGHTFLIP':{cash:10000000,xp:10000,msg:'Midnight Flip: +$10,000,000 and +10,000 XP.'},
+ 'DIAMONDVAULT':{cash:25000000,xp:15000,msg:'Diamond Vault: +$25,000,000 and +15,000 XP.'},
+ 'SECRETEMPIRE':{cash:50000000,xp:20000,msg:'Secret Empire: +$50,000,000 and +20,000 XP.'},
+ 'BLUEBILLION':{cash:100000000,xp:30000,msg:'Blue Billion: +$100,000,000 and +30,000 XP.'},
+ 'ULTRARARE':{cash:250000000,xp:50000,msg:'Ultra Rare: +$250,000,000 and +50,000 XP.'},
  'ADMIN':{admin:true,msg:'Admin access unlocked on this browser. Open Settings → Admin Panel.'}
 };
 function openSettings(){openModal(`<h3>⚙️ Settings</h3><p class="small">Game controls and secret codes.</p><div class="btn-row"><button class="btn ghost" onclick="toggleFullscreen()">⛶ Toggle fullscreen</button><button class="btn ghost" onclick="exportSave()">💾 Export save</button><button class="btn ghost" onclick="$('importFile').click();closeModal()">📥 Import save</button>${S.adminUnlocked?'<button class="btn sell" onclick="openAdminPanel()">👑 Admin Panel</button>':''}</div><hr style="border-color:var(--line);margin:14px 0"><h3>🔐 Redeem codes</h3><p class="small">Enter a code below. Each code can only be redeemed once on this browser.</p><input id="secretCodeInput" placeholder="Enter secret code" autocomplete="off" style="text-transform:uppercase"><div class="btn-row" style="margin-top:9px"><button class="btn sell" onclick="redeemSecretCode()">🎁 Redeem code</button><button class="btn ghost" onclick="closeModal()">Close</button></div><p class="small" style="margin-top:12px">Try special codes to unlock rewards.</p>`)}
@@ -938,9 +944,20 @@ const SECRET_ITEMS=[
  secretItem('GOLDEN FLIP PHONE','📱','electronics',1250000),
  secretItem('PHANTOM PROTOTYPE','🛸','collectibles',5000000),
  secretItem('FOUNDER RELIC','💎','luxury',10000000),
- secretItem('NEON DRAGON CARD','🐉','collectibles',3200000)
+ secretItem('NEON DRAGON CARD','🐉','collectibles',3200000),
+ secretItem('CELESTIAL WATCH','🌌','luxury',18000000),
+ secretItem('PHOENIX SNEAKERS','🔥','fashion',8500000),
+ secretItem('BLACK DIAMOND HEADSET','🎧','electronics',6500000),
+ secretItem('GOLDEN ARCADE CABINET','🕹️','collectibles',12500000),
+ secretItem('INFINITY CHAIN','⛓️','luxury',32000000),
+ secretItem('HYPERSPORT GT','🏎️','luxury',75000000),
+ secretItem('ROYAL BLUE GEM','🔷','luxury',45000000),
+ secretItem('COSMIC LEGO RELIC','🪐','collectibles',22000000),
+ secretItem('FOUNDER GOLDEN LAPTOP','💻','electronics',28000000),
+ secretItem('EMPEROR CROWN','👑','luxury',100000000),
+ secretItem('DYNASTY ONE-OF-ONE','🏆','collectibles',250000000)
 ];
-function addSecretItems(){SECRET_ITEMS.forEach(item=>{if(!S.inv.some(it=>it.item&&it.item.n===item.n)){S.inv.push({id:uid(),item,cost:0,shipping:0,total:0,boughtDay:S.day,quality:1.5,condition:'New',verified:true,det:genDetails(item,'New'),seller:'Flip Dynasty Secret Vault',listed:false,listingId:null})}});log('🗝️ The Secret Vault opened. Hidden collector items added to your inventory.','var(--purple)');toast('Secret Vault unlocked! 6 hidden items added.');checkAchievements();save();render()}
+function addSecretItems(){let added=0;SECRET_ITEMS.forEach(item=>{if(!S.inv.some(it=>it.item&&it.item.n===item.n)){S.inv.push({id:uid(),item,cost:0,shipping:0,total:0,boughtDay:S.day,quality:1.5,condition:'New',verified:true,det:genDetails(item,'New'),seller:'Flip Dynasty Secret Vault',listed:false,listingId:null});added++}});log('🗝️ The Secret Vault opened. '+added+' hidden collector items added to your inventory.','var(--purple)');toast('Secret Vault unlocked! '+added+' new hidden items added.');checkAchievements();save();render()}
 function adminResult(message,isError=false){
   const out=$('adminOutput');
   if(out){out.textContent=message;out.style.color=isError?'#ff8b8b':'#a4d5ff'}
