@@ -221,7 +221,7 @@ body.market-vibe .serious-hero{display:flex}
 <script>
 const SAVE_KEY='flipbay_pro_v4',OLD_KEY='flipbay_pro_v3',DAY_MS=25000;
 const CATS=['electronics','fashion','collectibles','home','tickets','luxury'];
-const GOAL=1000000000,MILES=[1000,10000,50000,100000,250000,500000,1000000,2500000,5000000,10000000,25000000,50000000,100000000,150000000,200000000,300000000,500000000,750000000,1000000000];
+const GOAL=2000000000,MILES=[1000,10000,50000,100000,250000,500000,1000000,2500000,5000000,10000000,25000000,50000000,100000000,150000000,200000000,300000000,500000000,750000000,1000000000,1250000000,1500000000,1750000000,2000000000];
 const catalog=[
 {n:'AirPods Pro',i:'🎧',c:'electronics',base:165,vol:.18,ship:8,risk:.04,d:'Wireless earbuds with strong resale demand.'},
 {n:'iPhone 15',i:'📱',c:'electronics',base:620,vol:.14,ship:18,risk:.07,d:'Popular smartphone with dependable resale value.'},
@@ -306,7 +306,14 @@ const catalog=[
  {n:'Private Aviation Fleet',i:'✈️',c:'luxury',base:340000000,vol:.08,ship:0,risk:.1,lv:44,d:'A collection of fictional private aircraft assets. Maintenance logs, operating permissions, and ownership records matter.'},
  {n:'Luxury Real Estate Portfolio',i:'🏘️',c:'luxury',base:425000000,vol:.08,ship:0,risk:.08,lv:45,d:'A large portfolio of premium properties. Rental income, inspections, title records, and expenses shape the price.'},
  {n:'International Resort Collection',i:'🌍',c:'luxury',base:560000000,vol:.07,ship:0,risk:.08,lv:46,d:'A portfolio of destination resorts. Seasonal performance, permits, staffing, and audited accounts influence value.'},
- {n:'Dynasty Mega Corporation',i:'🏛️',c:'luxury',base:780000000,vol:.06,ship:0,risk:.08,lv:48,d:'The ultimate fictional business acquisition. Assets, revenue, liabilities, contracts, and independent audits determine its valuation.'}
+ {n:'Dynasty Mega Corporation',i:'🏛️',c:'luxury',base:780000000,vol:.06,ship:0,risk:.08,lv:48,d:'The ultimate fictional business acquisition. Assets, revenue, liabilities, contracts, and independent audits determine its valuation.'},
+ {n:'Global Sports Franchise',i:'🏟️',c:'luxury',base:920000000,vol:.07,ship:0,risk:.1,lv:49,d:'A fictional professional sports franchise with teams, facilities, contracts, and global fans.'},
+ {n:'Space Tourism Company',i:'🚀',c:'luxury',base:1080000000,vol:.08,ship:0,risk:.12,lv:50,d:'A fictional space-tourism business with launch facilities, research assets, and customer contracts.'},
+ {n:'Smart City Portfolio',i:'🌃',c:'luxury',base:1220000000,vol:.07,ship:0,risk:.09,lv:51,d:'A portfolio of fictional smart-city infrastructure, property, and technology assets.'},
+ {n:'Global Shipping Network',i:'🚢',c:'luxury',base:1380000000,vol:.07,ship:0,risk:.09,lv:52,d:'A worldwide logistics group with ports, vessels, warehouses, and long-term contracts.'},
+ {n:'Dynasty Media Empire',i:'🎬',c:'luxury',base:1540000000,vol:.06,ship:0,risk:.08,lv:53,d:'A fictional media group with studios, streaming rights, production assets, and a global audience.'},
+ {n:'Worldwide Tech Conglomerate',i:'🌐',c:'luxury',base:1720000000,vol:.06,ship:0,risk:.09,lv:54,d:'A top-tier fictional technology company with software, hardware, patents, and enterprise contracts.'},
+ {n:'Ultimate Dynasty Holdings',i:'👑',c:'luxury',base:1950000000,vol:.05,ship:0,risk:.07,lv:55,d:'The final endgame holding company, combining premium property, technology, media, and global businesses.'}
 ];
 const buyers=['Maya R.','Jordan T.','Sofia L.','Ethan K.','Priya N.','Liam O.','Ava M.','Noah B.','Zara H.','Omar S.','Chloe W.','Lucas F.','Nina P.','Milo D.','Isla C.','Ravi J.','Ella G.','Felix V.','Hana T.','Diego M.'];
 const first=['Alex','Sam','Chris','Taylor','Jamie','Robin','Morgan','Casey','Riley','Dana','Jules','Reese','Mara','Nico','Leo'];
@@ -708,8 +715,8 @@ function checkAchievements(){
  if(w>=10000000)unlock('10m','Tycoon','Reach $10,000,000 net worth.');
  if(w>=50000000)unlock('50m','Market Mogul','Reach $50,000,000 net worth.');
  if(w>=100000000)unlock('100m','Mega Empire','Reach $100,000,000 net worth.');
- if(w>=GOAL&&!S.won){S.won=true;log('🏆 <b>FLIP DYNASTY COMPLETE!</b> You reached $1,000,000,000 net worth.','var(--gold)');
-  openModal('<h3>🏆 Dynasty Legend!</h3><p class="small">You reached $1,000,000,000 net worth. You built the ultimate resale empire — keep playing if you want!</p><button class="btn sell" onclick="closeModal()">🚀 Keep reselling</button>')}}
+ if(w>=GOAL&&!S.won){S.won=true;log('🏆 <b>FLIP DYNASTY COMPLETE!</b> You reached $2,000,000,000 net worth.','var(--gold)');
+  openModal('<h3>🏆 Dynasty Legend!</h3><p class="small">You reached $2,000,000,000 net worth. You built the ultimate resale empire — keep playing if you want!</p><button class="btn sell" onclick="closeModal()">🚀 Keep reselling</button>')}}
 function randomEvent(){
  const r=Math.random();
  if(r<.15){S.inv.forEach(i=>i.quality=clamp(i.quality*1.12,.4,2));log('📈 <b>Viral trend:</b> demand increased across your inventory.','var(--gold)');toast('📈 Viral trend increased demand!')}
@@ -913,43 +920,70 @@ const SECRET_ITEMS=[
  secretItem('NEON DRAGON CARD','🐉','collectibles',3200000)
 ];
 function addSecretItems(){SECRET_ITEMS.forEach(item=>{if(!S.inv.some(it=>it.item&&it.item.n===item.n)){S.inv.push({id:uid(),item,cost:0,shipping:0,total:0,boughtDay:S.day,quality:1.5,condition:'New',verified:true,det:genDetails(item,'New'),seller:'Flip Dynasty Secret Vault',listed:false,listingId:null})}});log('🗝️ The Secret Vault opened. Hidden collector items added to your inventory.','var(--purple)');toast('Secret Vault unlocked! 6 hidden items added.');checkAchievements();save();render()}
+function adminResult(message,isError=false){
+  const out=$('adminOutput');
+  if(out){out.textContent=message;out.style.color=isError?'#ff8b8b':'#a4d5ff'}
+  toast(message);
+}
 function runAdminCommand(){
- const el=$('adminCommandInput');if(!el)return;
- const raw=el.value.trim();
- const parts=raw.replace(/,/g,'').split(/\s+/).filter(Boolean);
- let command=(parts.shift()||'').toLowerCase().replace(/^\//,'');
- if(command==='set'&&parts[0]?.toLowerCase()==='cash'){command='setcash';parts.shift()}
- if(command==='add'&&parts[0]?.toLowerCase()==='cash'){command='give';parts.shift()}
- // Accept both compact amounts (1b) and natural-language amounts (1 billion).
- const suffixes={k:1e3,m:1e6,b:1e9,thousand:1e3,million:1e6,billion:1e9};
- let amountText=(parts[0]||'').replace(/^\$/,'').toLowerCase();
- if(parts[1]&&Object.prototype.hasOwnProperty.call(suffixes,parts[1].toLowerCase())){
-   amountText+=parts[1].toLowerCase();parts.splice(0,2);
- }else if(parts.length){parts.shift()}
- const amountMatch=amountText.match(/^([0-9]+(?:\.[0-9]+)?)(k|m|b|thousand|million|billion)?$/);
- const n=amountMatch?Number(amountMatch[1])*(suffixes[amountMatch[2]||'']||1):NaN;
- const cmd='/'+command;
- if(!S.adminUnlocked){toast('Admin access is locked.');return}
- if(cmd==='/help'){toast('/give, /setcash, /set cash, /multis, /xp, /setlevel, /setrep, /giveitem, /maxupgrades, /unlockall, /secretitems, /nextday, /marketdrop, /refreshmarket, /bonus, /help');return}
- if(cmd==='/give'&&Number.isFinite(n)&&n>0){S.cash+=n;log('👑 Admin: added '+money(n)+' cash.','var(--gold)')}
- else if(cmd==='/setcash'&&Number.isFinite(n)&&n>=0){S.cash=n;log('👑 Admin: cash set to '+money(n)+'.','var(--gold)')}
- else if(cmd==='/multis'&&Number.isFinite(n)&&n>0){S.cash=Math.round(S.cash*n);log('👑 Admin: cash multiplied by '+n+'.','var(--gold)')}
- else if(cmd==='/xp'&&Number.isFinite(n)&&n>0){S.xp+=n;checkLevel();log('👑 Admin: added '+n+' XP.','var(--gold)')}
- else if(cmd==='/maxupgrades'){upgrades.forEach(u=>S.upgrades[u.id]=10);log('👑 Admin: all business upgrades set to level 10.','var(--gold)')}
- else if(cmd==='/unlockall'){S.level=99;S.xp=Math.max(S.xp,9800);log('👑 Admin: all level-locked marketplace items unlocked.','var(--gold)')}
- else if(cmd==='/secretitems'){addSecretItems();return}
- else if(cmd==='/nextday'){nextDay();log('👑 Admin: advanced to the next day.','var(--gold)')}
- else if(cmd==='/marketdrop'){const drop=Array.from({length:8},()=>makeListing(true));S.market.unshift(...drop);S.market=S.market.slice(0,30);log('👑 Admin: spawned 8 rare market deals.','var(--gold)')}
- else if(cmd==='/setlevel'&&Number.isFinite(n)&&n>=1&&n<=99){S.level=Math.floor(n);S.xp=Math.max(S.xp,(S.level-1)*100);log('👑 Admin: level set to '+S.level+'.','var(--gold)')}
- else if(cmd==='/setrep'&&Number.isFinite(n)&&n>=0&&n<=100){S.rep=Math.floor(n);log('👑 Admin: reputation set to '+S.rep+'.','var(--gold)')}
- else if(cmd==='/giveitem'&&parts.length){const query=[amountText,...parts].filter(Boolean).join(' ').toLowerCase();const item=catalog.find(x=>x.n.toLowerCase()===query)||catalog.find(x=>x.n.toLowerCase().includes(query));if(!item){toast('Item not found. Try its marketplace name.');return}S.inv.push({id:uid(),item,cost:0,shipping:0,total:0,boughtDay:S.day,quality:1,condition:'New',verified:true,det:genDetails(item,'New'),seller:'Admin Gift',listed:false,listingId:null});log('👑 Admin: added '+item.i+' '+item.n+' to your inventory.','var(--gold)')}
- else if(cmd==='/refreshmarket'){refreshMarket(true);log('👑 Admin: marketplace refreshed.','var(--gold)')}
- else if(cmd==='/bonus'){S.cash+=1000000;S.xp+=1000;checkLevel();log('👑 Admin: bonus granted — $1,000,000 and 1,000 XP.','var(--gold)')}
- else{toast('Unknown command or invalid amount. Try /setcash 1000000000, /set cash 1 billion, or /help.');return}
- save();render();toast('Admin command executed: '+cmd)}
+  const el=$('adminCommandInput');if(!el)return;
+  const raw=el.value.trim();
+  if(!raw){adminResult('Type a command first.',true);return}
+  if(!S.adminUnlocked){adminResult('Admin access is locked.',true);return}
+  const tokens=raw.replace(/,/g,'').trim().split(/\s+/);
+  const command=(tokens.shift()||'').toLowerCase().replace(/^\//,'');
+  const suffixes={k:1e3,m:1e6,b:1e9,t:1e12,thousand:1e3,million:1e6,billion:1e9,trillion:1e12};
+  function parseAmount(parts){
+    if(!parts.length)return NaN;
+    const value=String(parts[0]).replace(/^\$/,'').toLowerCase();
+    const match=value.match(/^([0-9]+(?:\.[0-9]+)?)(k|m|b|t|thousand|million|billion|trillion)?$/);
+    if(!match)return NaN;
+    const amount=Number(match[1])*(suffixes[match[2]||'']||1);
+    if(parts[1]&&Object.prototype.hasOwnProperty.call(suffixes,parts[1].toLowerCase()))parts.splice(0,2);else parts.shift();
+    return Number.isFinite(amount)?amount:NaN;
+  }
+  let args=tokens.slice(),cmd=command;
+  if(cmd==='set'&&args[0]?.toLowerCase()==='cash'){cmd='setcash';args.shift()}
+  if(cmd==='add'&&args[0]?.toLowerCase()==='cash'){cmd='give';args.shift()}
+  if(cmd==='set'&&args[0]?.toLowerCase()==='level'){cmd='setlevel';args.shift()}
+  if(cmd==='set'&&args[0]?.toLowerCase()==='rep'){cmd='setrep';args.shift()}
+  if(cmd==='cash')cmd='setcash';
+  if(cmd==='money')cmd='give';
+  if(cmd==='maxlevel')cmd='unlockall';
+  if(cmd==='giveitem'){
+    const query=args.join(' ').trim().toLowerCase();
+    const item=catalog.find(x=>x.n.toLowerCase()===query)||catalog.find(x=>x.n.toLowerCase().includes(query));
+    if(!query||!item){adminResult('Item not found. Use the exact marketplace item name.',true);return}
+    S.inv.push({id:uid(),item,cost:0,shipping:0,total:0,boughtDay:S.day,quality:1,condition:'New',verified:true,det:genDetails(item,'New'),seller:'Admin Gift',listed:false,listingId:null});
+    log('👑 Admin: added '+item.i+' '+item.n+' to your inventory.','var(--gold)');
+    save();render();adminResult('Added '+item.n+' to your inventory.');return;
+  }
+  if(cmd==='help'){adminResult('Commands: /give, /setcash, /multis, /xp, /setlevel, /setrep, /giveitem, /maxupgrades, /unlockall, /secretitems, /nextday, /marketdrop, /refreshmarket, /bonus, /clearinventory, /repair, /maxcash, /help');return}
+  if(cmd==='secretitems'){addSecretItems();adminResult('Secret Vault items added.');return}
+  if(cmd==='maxupgrades'){upgrades.forEach(u=>S.upgrades[u.id]=10);log('👑 Admin: all upgrades maxed.','var(--gold)')}
+  else if(cmd==='unlockall'){S.level=99;S.xp=Math.max(S.xp,9800);log('👑 Admin: all level-locked items unlocked.','var(--gold)')}
+  else if(cmd==='nextday'){nextDay();log('👑 Admin: advanced one day.','var(--gold)')}
+  else if(cmd==='marketdrop'){const drop=Array.from({length:12},()=>makeListing(true));S.market.unshift(...drop);S.market=S.market.slice(0,40);log('👑 Admin: spawned 12 rare marketplace deals.','var(--gold)')}
+  else if(cmd==='refreshmarket'){refreshMarket(true);log('👑 Admin: marketplace refreshed.','var(--gold)')}
+  else if(cmd==='bonus'){S.cash+=1000000;S.xp+=1000;checkLevel();log('👑 Admin: +$1,000,000 and +1,000 XP.','var(--gold)')}
+  else if(cmd==='clearinventory'){S.inv=[];S.listings=[];log('👑 Admin: inventory and active listings cleared.','var(--gold)')}
+  else if(cmd==='repair'){S.cash=Math.max(0,Number(S.cash)||0);S.xp=Math.max(0,Number(S.xp)||0);S.inv=Array.isArray(S.inv)?S.inv:[];S.market=Array.isArray(S.market)?S.market:[];log('👑 Admin: save data checks completed.','var(--gold)')}
+  else if(cmd==='maxcash'){S.cash=2000000000;log('👑 Admin: cash set to $2 billion.','var(--gold)')}
+  else{
+    const n=parseAmount(args);
+    if(cmd==='give'&&Number.isFinite(n)&&n>0){S.cash+=n;log('👑 Admin: added '+money(n)+' cash.','var(--gold)')}
+    else if(cmd==='setcash'&&Number.isFinite(n)&&n>=0){S.cash=n;log('👑 Admin: cash set to '+money(n)+'.','var(--gold)')}
+    else if(cmd==='multis'&&Number.isFinite(n)&&n>0){S.cash=Math.round(S.cash*n);log('👑 Admin: cash multiplied by '+n+'.','var(--gold)')}
+    else if(cmd==='xp'&&Number.isFinite(n)&&n>0){S.xp+=n;checkLevel();log('👑 Admin: added '+n+' XP.','var(--gold)')}
+    else if(cmd==='setlevel'&&Number.isFinite(n)&&n>=1&&n<=99){S.level=Math.floor(n);S.xp=Math.max(S.xp,(S.level-1)*100);log('👑 Admin: level set to '+S.level+'.','var(--gold)')}
+    else if(cmd==='setrep'&&Number.isFinite(n)&&n>=0&&n<=100){S.rep=Math.floor(n);log('👑 Admin: reputation set to '+S.rep+'.','var(--gold)')}
+    else{adminResult('Unknown command or invalid value. Type /help to see commands.',true);return}
+  }
+  save();render();adminResult('Command executed: /'+cmd);
+}
 function openAdminPanel(){
  if(!S.adminUnlocked){toast('Redeem ADMIN first.');return}
- openModal(`<h3>👑 Flip Dynasty Admin</h3><p class="small">Owner tools and hidden content. Type <b>/help</b> for the command list.</p><div class="statgrid"><div class="stat"><span class="small">Cash</span><b>${money(S.cash)}</b></div><div class="stat"><span class="small">Level</span><b>${S.level}</b></div><div class="stat"><span class="small">Inventory</span><b>${S.inv.length} items</b></div><div class="stat"><span class="small">Day</span><b>${S.day}</b></div></div><label class="small" for="adminCommandInput">Admin command</label><input id="adminCommandInput" placeholder="/give 1000000" autocomplete="off" onkeydown="if(event.key==='Enter')runAdminCommand()"><div class="btn-row" style="margin-top:9px"><button class="btn sell" onclick="runAdminCommand()">▶ Run command</button><button class="btn ghost" onclick="addSecretItems()">🗝️ Secret Vault</button><button class="btn ghost" onclick="closeModal()">Close</button></div><div class="detail" style="margin-top:12px">/give 1000000 · /setcash 500000 · /multis 10 · /xp 5000 · /setlevel 20 · /setrep 100 · /giveitem Gaming PC · /maxupgrades · /unlockall · /secretitems · /nextday · /marketdrop · /refreshmarket · /bonus · /help</div><p class="small" style="margin-top:10px">Note: this is a browser-side admin gate, not secure account authentication. Anyone who can inspect the game's code may discover the ADMIN code.</p>`)
+ openModal(`<h3>👑 Flip Dynasty Admin</h3><p class="small">Owner tools and hidden content. Type <b>/help</b> for the command list.</p><div class="statgrid"><div class="stat"><span class="small">Cash</span><b>${money(S.cash)}</b></div><div class="stat"><span class="small">Level</span><b>${S.level}</b></div><div class="stat"><span class="small">Inventory</span><b>${S.inv.length} items</b></div><div class="stat"><span class="small">Day</span><b>${S.day}</b></div></div><label class="small" for="adminCommandInput">Admin command</label><input id="adminCommandInput" placeholder="/give 1000000" autocomplete="off" onkeydown="if(event.key==='Enter')runAdminCommand()"><div class="btn-row" style="margin-top:9px"><button class="btn sell" onclick="runAdminCommand()">▶ Run command</button><button class="btn ghost" onclick="addSecretItems()">🗝️ Secret Vault</button><button class="btn ghost" onclick="closeModal()">Close</button></div><div id="adminOutput" class="detail" role="status" aria-live="polite" style="margin-top:12px">Ready. Type /help to view all commands.</div><div class="detail" style="margin-top:8px">/give 1b · /set cash 2b · /multis 10 · /xp 5000 · /setlevel 55 · /setrep 100 · /giveitem Gaming PC · /maxupgrades · /unlockall · /secretitems · /nextday · /marketdrop · /refreshmarket · /bonus · /maxcash · /clearinventory · /repair · /help</div><p class="small" style="margin-top:10px">Note: this is a browser-side admin gate, not secure account authentication. Anyone who can inspect the game's code may discover the ADMIN code.</p>`)
 }
 function toggleFullscreen(){const el=document.documentElement;if(!document.fullscreenElement){if(el.requestFullscreen)el.requestFullscreen().catch(()=>toast('Fullscreen is unavailable in this browser.'));else toast('Fullscreen is unavailable in this browser.')}else if(document.exitFullscreen)document.exitFullscreen().catch(()=>{});}
 function updateFullscreenLabel(){const b=$('fullscreenBtn');if(b)b.textContent=document.fullscreenElement?'⛶ Exit fullscreen':'⛶ Fullscreen'}
@@ -971,7 +1005,7 @@ $('settingsBtn').onclick=openSettings;$('fullscreenBtn').onclick=toggleFullscree
 /* ---------- start ---------- */
 load();
 if(!S.market.length)refreshMarket(true);
-if(!S.log.length)log('Welcome to <b>Flip Dynasty</b>. You start with $100. Find undervalued products, list them, chat and negotiate with buyers, upgrade your business, unlock rare assets, and build toward $1,000,000,000 net worth.');
+if(!S.log.length)log('Welcome to <b>Flip Dynasty</b>. You start with $100. Find undervalued products, list them, chat and negotiate with buyers, upgrade your business, unlock rare assets, and build toward $2,000,000,000 net worth.');
 $('search').value=S.search||'';
 tickAt=Date.now()+DAY_MS;
 render();
