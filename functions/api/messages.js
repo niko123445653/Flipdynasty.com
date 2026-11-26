@@ -22,7 +22,7 @@ function sameOrigin(request) {
 function isOwner(request, env) {
   const expected = env.FD_GLOBAL_ADMIN_TOKEN;
   const supplied = request.headers.get("Authorization") || "";
-  return typeof expected === "string" && expected.length >= 32 &&
+  return typeof expected === "string" && expected.length >= 8 &&
     supplied === `Bearer ${expected}`;
 }
 
@@ -48,7 +48,7 @@ export async function onRequest(context) {
       return json({ error: "Requests must come from the game website." }, 403);
     }
 
-    if (!env.FD_GLOBAL_ADMIN_TOKEN || String(env.FD_GLOBAL_ADMIN_TOKEN).length < 32) {
+    if (!env.FD_GLOBAL_ADMIN_TOKEN || String(env.FD_GLOBAL_ADMIN_TOKEN).length < 8) {
       return json({ error: "Owner announcement security is not configured yet. Set the FD_GLOBAL_ADMIN_TOKEN secret in Cloudflare Pages." }, 503);
     }
     if (!isOwner(request, env)) {
