@@ -1142,6 +1142,8 @@ function runAdminCommand(){
   const raw=el.value.trim();
   if(!raw){adminResult('Type a command first.',true);return}
   if(!S.adminUnlocked){adminResult('Admin access is locked.',true);return}
+  const globalMatch=raw.match(/^\/?globalmsg(?:\s+([\s\S]+))?$/i);
+  if(globalMatch){publishGlobalMessage(globalMatch[1]||'');return}
   const tokens=raw.replace(/,/g,'').trim().split(/\s+/);
   const command=(tokens.shift()||'').toLowerCase().replace(/^\//,'');
   const suffixes={k:1e3,m:1e6,b:1e9,t:1e12,thousand:1e3,million:1e6,billion:1e9,trillion:1e12};
@@ -1171,7 +1173,7 @@ function runAdminCommand(){
     log('👑 Admin: added '+item.i+' '+item.n+' to your inventory.','var(--gold)');
     save();render();adminResult('Added '+item.n+' to your inventory.');return;
   }
-  if(cmd==='help'){adminResult('Commands: /give, /setcash, /multis, /xp, /setlevel, /setrep, /giveitem, /maxupgrades, /unlockall, /secretitems, /nextday, /marketdrop, /refreshmarket, /bonus, /clearinventory, /repair, /maxcash, /help');return}
+  if(cmd==='help'){adminResult('Commands: /globalmsg your message, /give, /setcash, /multis, /xp, /setlevel, /setrep, /giveitem, /maxupgrades, /unlockall, /secretitems, /nextday, /marketdrop, /refreshmarket, /bonus, /clearinventory, /repair, /maxcash, /help');return}
   if(cmd==='secretitems'){addSecretItems();adminResult('Secret Vault items added.');return}
   if(cmd==='maxupgrades'){upgrades.forEach(u=>S.upgrades[u.id]=10);log('👑 Admin: all upgrades maxed.','var(--gold)')}
   else if(cmd==='unlockall'){S.level=99;S.xp=Math.max(S.xp,9800);log('👑 Admin: all level-locked items unlocked.','var(--gold)')}
@@ -1300,6 +1302,23 @@ function renderGlobalAdminMessageList(){
  });
 }
 
+async function publishGlobalMessage(message){
+ const textMessage=String(message||'').trim();
+ if(!textMessage){adminResult('Usage: /globalmsg hi guys',true);return}
+ if(textMessage.length>500){adminResult('Global messages must be 500 characters or fewer.',true);return}
+ const token=(($('fdGlobalToken')?.value)||fdGlobalAdminToken||'').trim();
+ if(!token){adminResult('Enter your owner secret in the Global announcements box first.',true);return}
+ fdGlobalAdminToken=token;
+ try{
+  const response=await fetch('/api/messages',{method:'POST',headers:{'content-type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({message:textMessage})});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||'Could not publish global message.');
+  const input=$('adminCommandInput');if(input)input.value='';
+  adminResult('📢 Global message sent to all players!');
+  await loadGlobalMessages();
+ }catch(error){adminResult(error.message||'Could not publish global message.',true)}
+}
+
 async function sendGlobalMessage(){
  const tokenInput=$('fdGlobalToken'),textInput=$('fdGlobalText');
  const token=(tokenInput?.value||fdGlobalAdminToken).trim();
@@ -1334,7 +1353,7 @@ async function deleteGlobalMessage(id){
 /* ---------- start ---------- */
 load();
 loadGlobalMessages();
-setInterval(loadGlobalMessages,60000);
+setInterval(loadGlobalMessages,10000);
 syncAdminButton();
 if(!S.market.length)refreshMarket(true);
 if(!S.log.length)log('Welcome to <b>Flip Dynasty</b>. You start with $100. Find undervalued products, list them, chat and negotiate with buyers, upgrade your business, unlock rare assets, and build toward the final $50,000,000,000 empire goal.');
