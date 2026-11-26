@@ -1,6 +1,6 @@
 # NOVA CLICKER for macOS
 
-A small macOS autoclicker with a Start/Stop button and adjustable speed (1–100 clicks per second).
+A small macOS autoclicker with a Start/Stop button and adjustable speed (1–500 clicks per second).
 
 ## Build it on a Mac
 
@@ -20,7 +20,7 @@ macOS requires Accessibility permission so the app can send clicks:
 ## How to use
 
 1. Move your mouse pointer to the place you want clicked.
-2. Choose a speed from 1 to 100 CPS.
+2. Choose a speed from 1 to 500 CPS.
 3. Press **START AFK CLICKING**.
 4. Press **STOP CLICKING** to stop.
 
