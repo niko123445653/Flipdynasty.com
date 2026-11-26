@@ -205,7 +205,7 @@ body.market-vibe .serious-hero{display:flex}
 <div class="wrap">
 <div><div class="card"><div class="head"><h2 id="viewTitle">Live marketplace</h2><div class="small" id="viewNote"></div></div><div class="body"><div id="toolbar"></div><div class="grid" id="content"></div></div></div></div>
 <aside>
-<div class="card"><div class="head"><h2>Empire milestones</h2></div><div class="body"><p class="small">Reach <b class="gold">$1,000,000,000</b> net worth.<br><span class="small">Milestones scale from $1K to $1B. Unlock bigger assets as your level rises.</span></p><div class="bar"><i id="goalBar"></i></div><div class="small" id="goalText"></div><div class="small" id="goalNext"></div>
+<div class="card"><div class="head"><h2>Empire milestones</h2></div><div class="body"><p class="small">First target: <b class="gold">$2,000,000,000</b> net worth.<br><span class="small">Beat each target to unlock a bigger one. There is no final goal!</span></p><div class="bar"><i id="goalBar"></i></div><div class="small" id="goalText"></div><div class="small" id="goalNext"></div>
 <div class="sidebtns"><button class="btn ghost stack" id="refreshBtn" title="Pay $5 to load a fresh set of listings"><span class="lbl">🔄 Refresh feed</span><span class="sub">new listings · $5</span></button><button class="btn ghost stack" id="scoutBtn" title="Pay $25 to find two off-market deals"><span class="lbl">🔭 Scout deals</span><span class="sub">2 hidden deals · $25</span></button><button class="btn ghost stack" id="gigBtn" title="Earn a little cash once per day"><span class="lbl">🛠️ Side gig</span><span class="sub">+$15–35 · once a day</span></button><button class="btn ghost stack" id="skipBtn" title="Skip ahead to the next day"><span class="lbl">⏭ Next day</span><span class="sub">skip the wait</span></button></div>
 <div class="small" style="margin-top:10px">Next day in <span id="clock">25</span>s</div><div class="bar" style="margin-top:4px"><i id="clockBar" style="background:var(--gold)"></i></div></div></div>
 <div class="card" style="margin-top:13px"><div class="head"><h2>Market pulse</h2></div><div class="body"><div id="pulse" class="small"></div></div></div>
@@ -357,7 +357,7 @@ const PH={
 function defState(){return{v:4,cash:100,day:1,xp:0,level:1,rep:100,homeCity:'Bergen',inv:[],market:[],listings:[],offers:[],threads:[],reviews:[],log:[],drafts:{},openThread:null,
  trend:{electronics:1,fashion:1,collectibles:1,home:1,tickets:1,luxury:1},
  stats:{bought:0,sold:0,profit:0,bestProfit:0,offersAccepted:0,counterAccepted:0,scamsAvoided:0,chats:0,shippingPaid:0},
- upgrades:{},achievements:{},view:'market',search:'',category:'all',sort:'newest',won:false,gigDay:0,lastSeen:Date.now()}}
+ upgrades:{},achievements:{},goalStage:0,view:'market',search:'',category:'all',sort:'newest',won:false,gigDay:0,lastSeen:Date.now()}}
 let S=defState(),storageOK=true,lastSaved=null,tickAt=Date.now()+DAY_MS,chipList=[];
 const $=id=>document.getElementById(id);
 const money=n=>(n<0?'-':'')+'$'+Math.round(Math.abs(n)).toLocaleString();
@@ -398,8 +398,8 @@ function hydrate(d){
  const base=defState(),s=Object.assign(base,d);
  s.stats=Object.assign(defState().stats,d.stats||{});s.trend=Object.assign(defState().trend,d.trend||{});
  ['inv','market','listings','offers','threads','reviews','log'].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[]});
- s.upgrades=s.upgrades||{};s.achievements=s.achievements||{};s.drafts=s.drafts||{};delete s.messages;
- if(s.won&&(s.cash||0)+s.inv.reduce((a,i)=>a+(i.total||0),0)<GOAL)s.won=false;
+ s.upgrades=s.upgrades||{};s.achievements=s.achievements||{};s.goalStage=Math.max(0,Math.floor(Number(s.goalStage)||0));s.drafts=s.drafts||{};delete s.messages;
+ s.won=false;
  s.inv.forEach(it=>{if(!it.det)it.det=genDetails(it.item,it.condition||'Good')});
  s.market.forEach(l=>{if(!l.det)l.det=genDetails(l.item,l.condition||'Good');l.tags=(l.tags||[]).filter(t=>t!=='fake')});
  s.listings.forEach(l=>{delete l.offers});
@@ -435,6 +435,7 @@ function doReset(){S=defState();refreshMarket(true);log('New game started. You h
 /* ---------- economy ---------- */
 function levelFromXp(){return 1+Math.floor(S.xp/100)}
 function netWorth(){return S.cash+S.inv.reduce((a,i)=>a+i.total,0)}
+function currentGoal(){return GOAL*Math.pow(2,S.goalStage||0)}
 function genDetails(item,condition){
  const acc={electronics:['Charger included','Case included','Cable only','No accessories'],home:['All attachments','Missing one attachment','Manual included'],fashion:['Dust bag included','Tags attached','No extras','Care card'],collectibles:['Protective case','Sleeved','Certificate of authenticity','Shelf wear on box'],tickets:['Transfer via app','PDF delivery','Seat info verified'],luxury:['Certificate of authenticity','Original papers','Insured delivery','Service records']}[item.c];
  const wear={New:'Factory fresh, no signs of use.','Like new':'Barely used, no visible marks.',Good:'Light signs of use.',Used:'Visible wear but fully functional.','For parts':'Not fully working — sold for parts.'};
@@ -727,8 +728,11 @@ function checkAchievements(){
  if(w>=10000000)unlock('10m','Tycoon','Reach $10,000,000 net worth.');
  if(w>=50000000)unlock('50m','Market Mogul','Reach $50,000,000 net worth.');
  if(w>=100000000)unlock('100m','Mega Empire','Reach $100,000,000 net worth.');
- if(w>=GOAL&&!S.won){S.won=true;log('🏆 <b>FLIP DYNASTY COMPLETE!</b> You reached $2,000,000,000 net worth.','var(--gold)');
-  openModal('<h3>🏆 Dynasty Legend!</h3><p class="small">You reached $2,000,000,000 net worth. You built the ultimate resale empire — keep playing if you want!</p><button class="btn sell" onclick="closeModal()">🚀 Keep reselling</button>')}}
+ if(w>=currentGoal()){
+  const completed=currentGoal();S.goalStage=(S.goalStage||0)+1;const next=currentGoal();
+  log(`🏆 <b>EMPIRE GOAL CLEARED!</b> You reached ${money(completed)} net worth. Next target: ${money(next)}.`,'var(--gold)');
+  save();openModal(`<h3>🏆 Dynasty Level ${S.goalStage}!</h3><p class="small">You reached ${money(completed)} net worth! Your empire keeps growing. Your new goal is <b class="gold">${money(next)}</b>.</p><button class="btn sell" onclick="closeModal();render()">🚀 Keep building</button>`)
+ }}
 function randomEvent(){
  const r=Math.random();
  if(r<.15){S.inv.forEach(i=>i.quality=clamp(i.quality*1.12,.4,2));log('📈 <b>Viral trend:</b> demand increased across your inventory.','var(--gold)');toast('📈 Viral trend increased demand!')}
@@ -846,8 +850,8 @@ function render(){
  const pm=$('msgs'),wasBottom=!pm||pm.scrollHeight-pm.scrollTop-pm.clientHeight<50,prevTop=pm?pm.scrollTop:0,prevThread=render._t;
  $('cash').textContent=money(S.cash);$('invCount').textContent=S.inv.length;$('worth').textContent=money(netWorth());$('day').textContent=S.day;$('level').textContent=S.level;
  const ar=avgRating();$('rating').textContent=ar?ar.toFixed(1):'—';
- const w=netWorth();$('goalBar').style.width=clamp(w/GOAL*100,0,100)+'%';$('goalText').textContent=`${money(w)} / ${money(GOAL)}`;$('refreshBtn').disabled=S.cash<5;$('scoutBtn').disabled=S.cash<25;$('gigBtn').disabled=S.gigDay===S.day;$('gigBtn').querySelector('.sub').textContent=S.gigDay===S.day?'already done today':'+$15–35 · once a day';
- const nextMile=MILES.find(m=>m>w);$('goalNext').textContent=nextMile?`Next milestone: ${money(nextMile)}`:'Goal reached! 🏆';
+ const w=netWorth(),goal=currentGoal();$('goalBar').style.width=clamp(w/goal*100,0,100)+'%';$('goalText').textContent=`${money(w)} / ${money(goal)}`;$('refreshBtn').disabled=S.cash<5;$('scoutBtn').disabled=S.cash<25;$('gigBtn').disabled=S.gigDay===S.day;$('gigBtn').querySelector('.sub').textContent=S.gigDay===S.day?'already done today':'+$15–35 · once a day';
+ const nextMile=MILES.find(m=>m>w&&m<goal);$('goalNext').textContent=nextMile?`Next milestone: ${money(nextMile)}`:`Empire target ${S.goalStage+1}: ${money(goal)}`;
  document.querySelectorAll('.subnav button').forEach(b=>b.classList.toggle('active',b.dataset.view===S.view));
  const unread=S.threads.reduce((a,t)=>a+(t.unread||0),0),offerN=S.offers.length;
  document.querySelector('[data-view=messages]').innerHTML='💬 Messages'+(unread?`<span class="badge">${unread}</span>`:'');
@@ -919,6 +923,11 @@ const SECRET_CODES={
  'DYNASTYSTART':{cash:2500,xp:100,msg:'Starter boost: +$2,500 and +100 XP.'},
  'FLIPBOOST':{cash:10000,xp:250,msg:'Flip boost: +$10,000 and +250 XP.'},
  'GOLDENMARKET':{cash:50000,xp:500,msg:'Golden market: +$50,000 and +500 XP.'},
+ 'BIGFLIP':{cash:100000,xp:750,msg:'Big Flip: +$100,000 and +750 XP.'},
+ 'BLUECHIP':{cash:250000,xp:1000,msg:'Blue Chip: +$250,000 and +1,000 XP.'},
+ 'DYNASTY2026':{cash:500000,xp:1500,msg:'Dynasty 2026: +$500,000 and +1,500 XP.'},
+ 'EMPIRE1M':{cash:1000000,xp:2500,msg:'Empire Million: +$1,000,000 and +2,500 XP.'},
+ 'VAULTKING':{cash:2500000,xp:5000,msg:'Vault King: +$2,500,000 and +5,000 XP.'},
  'ADMIN':{admin:true,msg:'Admin access unlocked on this browser. Open Settings → Admin Panel.'}
 };
 function openSettings(){openModal(`<h3>⚙️ Settings</h3><p class="small">Game controls and secret codes.</p><div class="btn-row"><button class="btn ghost" onclick="toggleFullscreen()">⛶ Toggle fullscreen</button><button class="btn ghost" onclick="exportSave()">💾 Export save</button><button class="btn ghost" onclick="$('importFile').click();closeModal()">📥 Import save</button>${S.adminUnlocked?'<button class="btn sell" onclick="openAdminPanel()">👑 Admin Panel</button>':''}</div><hr style="border-color:var(--line);margin:14px 0"><h3>🔐 Redeem codes</h3><p class="small">Enter a code below. Each code can only be redeemed once on this browser.</p><input id="secretCodeInput" placeholder="Enter secret code" autocomplete="off" style="text-transform:uppercase"><div class="btn-row" style="margin-top:9px"><button class="btn sell" onclick="redeemSecretCode()">🎁 Redeem code</button><button class="btn ghost" onclick="closeModal()">Close</button></div><p class="small" style="margin-top:12px">Try special codes to unlock rewards.</p>`)}
